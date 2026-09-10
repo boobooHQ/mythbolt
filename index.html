@@ -413,7 +413,7 @@ a{color:inherit}
   <div class="hero-inner wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow" style="margin-bottom:1.6rem">Offensive Security &middot; Est. Kathmandu</p>
+        <p class="eyebrow" style="margin-bottom:1.6rem">Offensive Security &middot; Independent Practice</p>
         <h1>Myth<span class="b">bolt</span></h1>
         <p class="hero-lede">
           Guardians sleep under the moss until something reaches for what they protect.
@@ -481,7 +481,7 @@ a{color:inherit}
   <div class="sec-head rv">
     <p class="eyebrow">Selected disclosures</p>
     <h2>The archive</h2>
-    <p>Findings reported through coordinated disclosure and bug-bounty programmes. Vendors are named only where the programme permits it.</p>
+    <p>Findings reported through coordinated disclosure and bug-bounty programmes. Vendors are named only where the programme permits it. <em style="color:var(--ink-3);font-style:normal">Sample entries.</em></p>
   </div>
 
   <div class="log rv">
@@ -493,62 +493,62 @@ a{color:inherit}
         <tr>
           <td class="mono">2026</td>
           <td>
-            <div class="t-title">Cisco BroadWorks</div>
-            <div class="t-sub">Unauthenticated XML external entity injection in the OCI provisioning parser, permitting arbitrary file read from the application host.</div>
+            <div class="t-title">Aetherion Systems</div>
+            <div class="t-sub">Unauthenticated entity injection in a provisioning parser, permitting arbitrary file read from the application host.</div>
           </td>
           <td class="mono">XXE &middot; CWE-611</td>
           <td><span class="sev sev-crit">Critical</span></td>
-          <td class="mono"><a class="ref" href="https://nvd.nist.gov/vuln/detail/CVE-2026-20320" target="_blank" rel="noopener">CVE-2026-20320</a></td>
+          <td class="mono">MB&#8209;2026&#8209;014</td>
         </tr>
         <tr>
           <td class="mono">2026</td>
           <td>
-            <div class="t-title">Apple</div>
-            <div class="t-sub">Authorization flaw in an internal service API allowing record operations across a tenant boundary without the corresponding entitlement.</div>
+            <div class="t-title">Corvid Health</div>
+            <div class="t-sub">Authorization flaw in a records API allowing operations across a tenant boundary without the corresponding entitlement.</div>
           </td>
           <td class="mono">Broken access control</td>
           <td><span class="sev sev-high">High</span></td>
-          <td class="mono">Resolved &middot; ASI</td>
+          <td class="mono">MB&#8209;2026&#8209;011</td>
         </tr>
         <tr>
           <td class="mono">2026</td>
           <td>
-            <div class="t-title">Tier-1 US carrier</div>
-            <div class="t-sub">Entity injection in a voice-platform provisioning interface, chained to disclosure of backend service configuration.</div>
+            <div class="t-title">Northwind Freight</div>
+            <div class="t-sub">Server-side request forgery in a document renderer, chained to disclosure of internal service configuration.</div>
           </td>
-          <td class="mono">XXE &rarr; info disclosure</td>
+          <td class="mono">SSRF &rarr; info disclosure</td>
           <td><span class="sev sev-crit">Critical</span></td>
-          <td class="mono">Private programme</td>
+          <td class="mono">MB&#8209;2026&#8209;009</td>
         </tr>
         <tr>
           <td class="mono">2026</td>
           <td>
-            <div class="t-title">European telecom operator</div>
-            <div class="t-sub">Absent rate limiting on a voice-portal authentication endpoint, permitting exhaustive recovery of numeric account passcodes.</div>
+            <div class="t-title">Helix Payments</div>
+            <div class="t-sub">Absent rate limiting on an account-recovery endpoint, permitting exhaustive recovery of numeric verification codes.</div>
           </td>
           <td class="mono">Auth &middot; CWE-307</td>
           <td><span class="sev sev-high">High</span></td>
-          <td class="mono">Private programme</td>
-        </tr>
-        <tr>
-          <td class="mono">2026</td>
-          <td>
-            <div class="t-title">Engineering software vendor</div>
-            <div class="t-sub">Access-control and information-disclosure findings across a cloud collaboration platform, reported as a consolidated set.</div>
-          </td>
-          <td class="mono">Access control &middot; disclosure</td>
-          <td><span class="sev sev-med">Medium</span></td>
-          <td class="mono">Bugcrowd</td>
+          <td class="mono">MB&#8209;2026&#8209;006</td>
         </tr>
         <tr>
           <td class="mono">2025</td>
           <td>
-            <div class="t-title">Public blockchain RPC provider</div>
-            <div class="t-sub">Unauthenticated method exposure on a node RPC interface permitting state queries outside the documented public surface.</div>
+            <div class="t-title">Pallas Robotics</div>
+            <div class="t-sub">Access-control and information-disclosure findings across a fleet management console, reported as a consolidated set.</div>
           </td>
-          <td class="mono">Exposed interface</td>
+          <td class="mono">Access control &middot; disclosure</td>
           <td><span class="sev sev-med">Medium</span></td>
-          <td class="mono">Disclosed</td>
+          <td class="mono">MB&#8209;2025&#8209;031</td>
+        </tr>
+        <tr>
+          <td class="mono">2025</td>
+          <td>
+            <div class="t-title">Lanternfish Media</div>
+            <div class="t-sub">Cache key confusion on an authenticated profile route, allowing a response containing subscriber detail to be served to anonymous clients.</div>
+          </td>
+          <td class="mono">Web cache deception</td>
+          <td><span class="sev sev-med">Medium</span></td>
+          <td class="mono">MB&#8209;2025&#8209;022</td>
         </tr>
       </tbody>
     </table>
@@ -571,8 +571,8 @@ a{color:inherit}
   <div class="posts">
     <a href="#writing" class="post rv">
       <div class="post-meta"><span class="tag">Parsers</span><span>12 min</span></div>
-      <h3>Parameter entities survive the patch</h3>
-      <p>A vendor fixed the general-entity case and closed the ticket. The parameter-entity path stayed open, and with it every file the service could read. On why patching the proof-of-concept is not patching the bug.</p>
+      <h3>Patching the proof, not the bug</h3>
+      <p>A fix that closes the exact request in the report, and nothing adjacent to it, leaves the vulnerability class intact. On regression-testing the variant instead of re-running the original payload.</p>
       <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>
 
@@ -621,10 +621,10 @@ a{color:inherit}
       <h2 style="font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em;margin:.7rem 0 1.6rem">
         A practice, not a scanner subscription
       </h2>
-      <p>Mythbolt is an independent offensive-security practice working on web applications, APIs, telecom platforms, and blockchain infrastructure.</p>
+      <p>Mythbolt is an independent offensive-security practice working on web applications, APIs, distributed platforms, and embedded infrastructure.</p>
       <p>Most security testing stops at the first thing that looks hardened. The interesting findings are usually one layer past that — in the disagreement between two components, in the version nobody deprecated properly, in the endpoint the interface stopped linking to but the server still answers.</p>
       <p>Work is delivered as reproducible proof. Every report includes the exact requests, the expected and actual responses, the controls that rule out a false positive, and an honest account of what was tested and did not break. A clean result is a real result when it is earned.</p>
-      <p>Active on HackerOne and Bugcrowd, with coordinated disclosures to telecom, consumer-technology, and enterprise-software vendors.</p>
+      <p>Engagements run through public and private disclosure programmes as well as direct contract, across the transport, healthcare, fintech, and industrial sectors.</p>
     </div>
 
     <dl class="creds rv">
@@ -634,19 +634,19 @@ a{color:inherit}
       </div>
       <div class="cred">
         <dt>Research</dt>
-        <dd>Telecom &amp; protocol<small>BroadWorks, SIP, provisioning interfaces</small></dd>
+        <dd>Protocol &amp; parser<small>Provisioning and messaging interfaces</small></dd>
       </div>
       <div class="cred">
         <dt>Also</dt>
-        <dd>Blockchain &amp; RPC<small>Node interfaces, contract review</small></dd>
+        <dd>Embedded &amp; RPC<small>Device interfaces, source review</small></dd>
       </div>
       <div class="cred">
-        <dt>Platforms</dt>
-        <dd>HackerOne &middot; Bugcrowd<small>Public and private programmes</small></dd>
+        <dt>Engagements</dt>
+        <dd>Programme &amp; contract<small>Public, private, and direct scope</small></dd>
       </div>
       <div class="cred">
-        <dt>Credentials</dt>
-        <dd>CVE-assigned researcher<small>OSCP in progress</small></dd>
+        <dt>Disclosure</dt>
+        <dd>Coordinated<small>90-day standard, vendor-first</small></dd>
       </div>
     </dl>
   </div>
@@ -659,8 +659,8 @@ a{color:inherit}
     <h2>Tell us what you are afraid of losing</h2>
     <p>Scoping starts with the outcome that would actually hurt — the data, the account, the service. We work backwards from there rather than starting with a checklist. Send a short note about the system and the boundary you want tested.</p>
     <div class="contact-row">
-      <a href="mailto:hello@mythbolt.com" class="btn btn-primary">
-        hello@mythbolt.com
+      <a href="mailto:contact@example.com" class="btn btn-primary">
+        contact@example.com
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
       <a href="#work" class="mailto">PGP key on request</a>
@@ -688,6 +688,9 @@ a{color:inherit}
     </nav>
     <p class="foot-note">&copy; 2026 Mythbolt</p>
   </div>
+  <p class="foot-note" style="margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--line);opacity:.72">
+    Design demo &mdash; all organisations, advisory references, and contact details on this page are fictional placeholders.
+  </p>
 </footer>
 
 <script>
