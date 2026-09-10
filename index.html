@@ -14,7 +14,7 @@
 <title>Mythbolt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;900&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 img{max-width:100%}
@@ -23,894 +23,774 @@ img{max-width:100%}
 </head>
 <body>
 <style>
-/* ============================================================
-   MYTHBOLT — tokens
-   Daylight: Laputa at altitude. Night: the storm sequence.
-   ============================================================ */
+/* ═══════════════════════════════════════════════════════════
+   MYTHBOLT — a descent
+   One painted world. Scroll is the camera. Words are rationed.
+   ═══════════════════════════════════════════════════════════ */
 :root{
-  --ground:#F2EFE4;
-  --ground-2:#E7E3D3;
-  --paper:#FBF9F2;
-  --paper-2:#F5F2E7;
-  --ink:#1C2A24;
-  --ink-2:#4C5C52;
-  --ink-3:#7E8C82;
-  --moss:#3E6B52;
-  --moss-soft:#DCE6DA;
-  --sky:#6E9BC4;
-  --sky-soft:#DEE9F3;
-  --brass:#B07C31;
-  --brass-lit:#C08A3E;
-  --brass-soft:#F1E2C6;
-  --line:#D6D1BF;
-  --line-2:#C4BEA8;
-
-  --sev-crit:#A83E28;
-  --sev-high:#B26A34;
-  --sev-med:#8A7B33;
-  --sev-low:#54725A;
-
-  --shadow-c:26 40 34;
-
-  --sky-top:#A8CBE4;
-  --sky-mid:#CFE2EE;
-  --sky-low:#EFEADC;
-  --cloud:#FFFFFF;
-  --cloud-shade:#C9D9E6;
-  --island:#3E6B52;
-  --island-2:#2C4F3C;
-  --island-rock:#8A7A5E;
-
+  --ink:#F4F1E6;
+  --ink-dim:#B9C4B4;
+  --brass:#E8B361;
+  --brass-hot:#FFD08A;
+  --moss:#8FBF9B;
+  --line:rgba(244,241,230,.18);
   --f-display:"Zen Old Mincho","Hiragino Mincho ProN",Georgia,serif;
-  --f-body:"Zen Kaku Gothic New","Hiragino Sans",system-ui,-apple-system,sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
-
-  --measure:64ch;
-  --pad:clamp(1.25rem,4vw,2.5rem);
-  --rule:1px solid var(--line);
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --pad:clamp(1.25rem,4vw,3rem);
 }
-
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --ground:#131E1D;
-    --ground-2:#0D1615;
-    --paper:#1B2926;
-    --paper-2:#16231F;
-    --ink:#E9EADF;
-    --ink-2:#A6B4A9;
-    --ink-3:#75857A;
-    --moss:#74A886;
-    --moss-soft:#22362C;
-    --sky:#8FB6D8;
-    --sky-soft:#1C2C39;
-    --brass:#DFA75F;
-    --brass-lit:#EDBD7C;
-    --brass-soft:#3A2D19;
-    --line:#2B3934;
-    --line-2:#3A4A44;
-
-    --sev-crit:#D9705A;
-    --sev-high:#DB9A5F;
-    --sev-med:#BFAE5E;
-    --sev-low:#7FA487;
-
-    --shadow-c:0 0 0;
-
-    --sky-top:#16233A;
-    --sky-mid:#1E3048;
-    --sky-low:#243043;
-    --cloud:#3E5570;
-    --cloud-shade:#26374F;
-    --island:#25453A;
-    --island-2:#182F28;
-    --island-rock:#453C2E;
-  }
-}
-:root[data-theme="dark"]{
-  --ground:#131E1D; --ground-2:#0D1615; --paper:#1B2926; --paper-2:#16231F;
-  --ink:#E9EADF; --ink-2:#A6B4A9; --ink-3:#75857A;
-  --moss:#74A886; --moss-soft:#22362C; --sky:#8FB6D8; --sky-soft:#1C2C39;
-  --brass:#DFA75F; --brass-lit:#EDBD7C; --brass-soft:#3A2D19;
-  --line:#2B3934; --line-2:#3A4A44;
-  --sev-crit:#D9705A; --sev-high:#DB9A5F; --sev-med:#BFAE5E; --sev-low:#7FA487;
-  --shadow-c:0 0 0;
-  --sky-top:#16233A; --sky-mid:#1E3048; --sky-low:#243043;
-  --cloud:#3E5570; --cloud-shade:#26374F;
-  --island:#25453A; --island-2:#182F28; --island-rock:#453C2E;
-}
+/* the world is painted; text is always light over it in both themes,
+   because the canvas itself carries the theme. */
 
 *,*::before,*::after{box-sizing:border-box}
 
+html{scroll-behavior:smooth}
 body{
   margin:0;
-  background:var(--ground);
+  background:#16233A;
   color:var(--ink);
-  font-family:var(--f-body);
-  font-size:16px;
-  line-height:1.65;
-  -webkit-font-smoothing:antialiased;
+  font-family:var(--f-display);
   overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* paper grain — the hand-painted surface */
+/* ── the world ─────────────────────────────────────────── */
+#world{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+
+/* grain */
 body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
-  opacity:.05;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+  opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::after{mix-blend-mode:overlay;opacity:.07}}
-:root[data-theme="dark"] body::after{mix-blend-mode:overlay;opacity:.07}
-
-h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;line-height:1.18;text-wrap:balance;margin:0}
-p{margin:0}
-a{color:inherit}
-
-.wrap{width:min(1180px,100% - 2*var(--pad));margin-inline:auto}
-.eyebrow{
-  font-family:var(--f-mono);font-size:.7rem;font-weight:500;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--brass);
+/* vignette */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:55;
+  background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(6,12,10,.30) 100%);
 }
-.jp{font-family:var(--f-display);letter-spacing:.3em}
 
-:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:2px}
-
-/* ============================================================ NAV */
+/* ── nav ───────────────────────────────────────────────── */
 .nav{
-  position:fixed;inset:0 0 auto 0;z-index:100;
-  display:flex;align-items:center;gap:2rem;
-  padding:1rem var(--pad);
-  transition:background .4s ease,border-color .4s ease,backdrop-filter .4s ease;
-  border-bottom:1px solid transparent;
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;gap:1.6rem;
+  padding:1.1rem var(--pad);
 }
-.nav[data-solid="true"]{
-  background:color-mix(in srgb,var(--ground) 88%,transparent);
-  backdrop-filter:blur(14px) saturate(1.2);
-  border-bottom-color:var(--line);
+/* keeps the bar readable over bright cloud as well as dark canopy */
+.nav::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(8,16,13,.52),transparent);
 }
 .brand{
-  font-family:var(--f-display);font-weight:700;font-size:1.08rem;
-  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
-  display:flex;align-items:center;gap:.55rem;color:var(--ink);
+  display:flex;align-items:center;gap:.5rem;
+  font-weight:900;font-size:1rem;letter-spacing:.2em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink);text-shadow:0 2px 14px rgba(0,0,0,.5);
 }
-.brand svg{width:20px;height:20px;color:var(--brass);flex:none}
-.nav-links{display:flex;gap:1.6rem;margin-left:auto;align-items:center}
-.nav-links a{
-  font-size:.83rem;text-decoration:none;color:var(--ink-2);
-  letter-spacing:.04em;transition:color .2s;position:relative;padding-block:.2rem;
+.brand svg{width:17px;height:17px;color:var(--brass);filter:drop-shadow(0 0 8px rgba(232,179,97,.7))}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:1.3rem}
+.nav-right a{
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:#E4E8DD;text-decoration:none;transition:color .3s;text-shadow:0 1px 12px rgba(0,0,0,.75);
 }
-.nav-links a::after{
-  content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
-  background:var(--brass);transition:width .3s ease;
-}
-.nav-links a:hover{color:var(--ink)}
-.nav-links a:hover::after{width:100%}
-.theme-btn{
-  background:none;border:1px solid var(--line-2);border-radius:999px;
-  width:34px;height:34px;display:grid;place-items:center;cursor:pointer;
-  color:var(--ink-2);transition:.25s;flex:none;
-}
-.theme-btn:hover{color:var(--brass);border-color:var(--brass)}
-.theme-btn svg{width:15px;height:15px}
-@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}}
+.nav-right a:hover{color:var(--brass)}
+@media(max-width:700px){.nav-right a.hide-sm{display:none}}
 
-.nav-cta{
-  border:1px solid var(--line-2);border-radius:999px;
-  padding:.42rem 1rem !important;color:var(--ink) !important;
+.tbtn{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  color:var(--ink-dim);cursor:pointer;transition:.3s;backdrop-filter:blur(6px);
 }
-.nav-cta::after{display:none}
-.nav-cta:hover{background:var(--brass);border-color:var(--brass);color:var(--ground) !important}
+.tbtn:hover{color:var(--brass);border-color:var(--brass)}
+.tbtn svg{width:13px;height:13px}
 
-/* ============================================================ HERO */
-.hero{position:relative;min-height:100svh;display:grid;align-items:center;overflow:hidden}
-#sky{position:absolute;inset:0;width:100%;height:100%;display:block}
-.hero-veil{
-  position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to bottom,transparent 55%,var(--ground) 97%);
+/* ── scenes ────────────────────────────────────────────── */
+/* overflow-x:clip (not hidden) contains the wide scrims without
+   turning this into a scroll container or clipping tooltips vertically */
+.scenes{position:relative;z-index:10;overflow-x:clip}
+.scene{
+  min-height:100svh;display:grid;place-items:center;
+  padding:6rem var(--pad);position:relative;
 }
-.hero-inner{position:relative;z-index:2;padding-block:9rem 5rem}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3rem;align-items:end}
-@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.scene-in{
+  position:relative;isolation:isolate;
+  text-align:center;max-width:min(62ch,100%);
+  opacity:0;transform:translateY(26px);
+  transition:opacity 1.1s cubic-bezier(.22,1,.36,1),transform 1.1s cubic-bezier(.22,1,.36,1);
+}
+/* scrim: wide and very soft, so it reads as depth of field rather than a panel */
+.scene-in::before{
+  content:"";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
+  width:min(340%,100vw);height:min(560%,150vh);
+  background:radial-gradient(ellipse at center,
+    rgba(10,18,15,.46) 0%,
+    rgba(10,18,15,.36) 22%,
+    rgba(10,18,15,.22) 42%,
+    rgba(10,18,15,.10) 60%,
+    transparent 76%);
+  filter:blur(22px);
+}
+.scene.on .scene-in{opacity:1;transform:none}
 
-.hero h1{
-  font-size:clamp(3.6rem,13vw,9.5rem);font-weight:900;
-  letter-spacing:-.035em;line-height:.86;margin-bottom:1.6rem;
+.wordmark{
+  font-size:clamp(4rem,17vw,13rem);font-weight:900;line-height:.84;
+  letter-spacing:-.04em;margin:0;
+  text-shadow:0 6px 50px rgba(0,0,0,.45);
 }
-.hero h1 .b{color:var(--brass);position:relative;display:inline-block}
-.hero-lede{
-  font-size:clamp(1.05rem,2.1vw,1.32rem);color:var(--ink-2);
-  max-width:36ch;margin-bottom:2.4rem;line-height:1.6;
+.wordmark .b{color:var(--brass);text-shadow:0 0 60px rgba(232,179,97,.55)}
+.jp{
+  font-size:clamp(.8rem,2vw,1.05rem);letter-spacing:.62em;
+  color:var(--ink-dim);margin:2rem 0 0;text-indent:.62em;
 }
-.hero-lede strong{color:var(--ink);font-weight:500}
-.hero-actions{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
 
-.btn{
-  font-family:var(--f-body);font-size:.9rem;font-weight:500;
-  text-decoration:none;padding:.8rem 1.7rem;border-radius:999px;
+.say{
+  font-size:clamp(1.7rem,5.4vw,3.6rem);font-weight:400;line-height:1.24;
+  letter-spacing:-.015em;margin:0;text-wrap:balance;
+  text-shadow:0 4px 34px rgba(0,0,0,.45);
+}
+.say em{font-style:normal;color:var(--brass)}
+
+.tag{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--ink-dim);margin:0 0 1.8rem;
+}
+
+/* craft: four words, nothing else */
+.craft{
+  display:flex;flex-wrap:wrap;gap:clamp(1.4rem,5vw,3.6rem);
+  justify-content:center;margin-top:3rem;
+}
+.craft span{
+  font-size:clamp(1.05rem,2.6vw,1.7rem);color:var(--ink);
+  position:relative;padding-bottom:.6rem;opacity:.9;
+  transition:color .35s,opacity .35s;cursor:default;
+}
+.craft span::after{
+  content:"";position:absolute;left:50%;bottom:0;width:0;height:1px;
+  background:var(--brass);transition:width .45s ease,left .45s ease;
+}
+.craft span:hover{color:var(--brass-hot);opacity:1}
+.craft span:hover::after{width:100%;left:0}
+
+/* ── the archive: lanterns ─────────────────────────────── */
+/* a grove reads better as two ranks than one line */
+.grove{
+  display:grid;grid-template-columns:repeat(3,auto);
+  justify-content:center;align-items:end;
+  column-gap:clamp(1.8rem,6vw,4.6rem);
+  row-gap:clamp(2.6rem,7vw,4.4rem);
+  margin-top:3.4rem;
+}
+@media(max-width:620px){.grove{grid-template-columns:repeat(2,auto)}}
+.lantern{
+  position:relative;background:none;border:0;padding:0;cursor:pointer;
+  display:grid;justify-items:center;gap:.9rem;
+  font-family:inherit;color:inherit;
+  animation:sway 7s ease-in-out infinite;
+}
+.lantern:nth-child(2){animation-delay:-1.1s}
+.lantern:nth-child(3){animation-delay:-2.4s}
+.lantern:nth-child(4){animation-delay:-3.3s}
+.lantern:nth-child(5){animation-delay:-4.6s}
+.lantern:nth-child(6){animation-delay:-5.5s}
+@keyframes sway{
+  0%,100%{transform:translateY(0) rotate(-1.6deg)}
+  50%{transform:translateY(-11px) rotate(1.6deg)}
+}
+.bulb{
+  width:var(--sz);height:calc(var(--sz) * 1.28);border-radius:48% 48% 44% 44%;
+  background:radial-gradient(ellipse at 50% 34%,var(--glow) 0%,color-mix(in srgb,var(--glow) 62%,transparent) 52%,transparent 74%);
+  box-shadow:0 0 34px 6px color-mix(in srgb,var(--glow) 42%,transparent),
+             0 0 90px 26px color-mix(in srgb,var(--glow) 17%,transparent);
+  position:relative;transition:transform .4s cubic-bezier(.34,1.56,.64,1),box-shadow .4s;
+}
+.bulb::before{ /* the cord */
+  content:"";position:absolute;left:50%;bottom:100%;width:1px;height:34px;
+  background:linear-gradient(transparent,var(--line));
+}
+.bulb::after{ /* the flame core */
+  content:"";position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+  width:24%;height:24%;border-radius:50%;background:#FFF6E2;
+  filter:blur(1.5px);opacity:.92;
+}
+.lantern:hover .bulb,.lantern:focus-visible .bulb{
+  transform:scale(1.17);
+  box-shadow:0 0 46px 10px color-mix(in srgb,var(--glow) 60%,transparent),
+             0 0 130px 40px color-mix(in srgb,var(--glow) 26%,transparent);
+}
+.lyear{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.18em;
+  color:var(--ink-dim);font-variant-numeric:tabular-nums;transition:color .3s;
+}
+.lantern:hover .lyear,.lantern:focus-visible .lyear{color:var(--ink)}
+
+.lcard{
+  position:absolute;bottom:calc(100% + 2.4rem);left:50%;transform:translate(-50%,8px);
+  width:min(15rem,74vw);padding:.85rem 1rem;
+  background:rgba(12,20,17,.9);border:1px solid var(--line);border-radius:3px;
+  backdrop-filter:blur(12px);
+  opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;
+  font-family:var(--f-mono);font-size:.68rem;line-height:1.6;letter-spacing:.02em;
+  color:var(--ink-dim);text-align:left;z-index:5;
+}
+.lcard b{display:block;color:var(--ink);font-weight:500;letter-spacing:.1em;text-transform:uppercase;font-size:.62rem;margin-bottom:.3rem}
+.lcard i{font-style:normal;color:var(--glow)}
+.lantern:hover .lcard,.lantern:focus-visible .lcard{opacity:1;transform:translate(-50%,0)}
+
+/* ── field notes ───────────────────────────────────────── */
+.notes{display:grid;gap:clamp(1.3rem,4vw,2.4rem);margin-top:3.2rem}
+.note{
+  font-size:clamp(1.15rem,3.1vw,2rem);color:var(--ink-dim);
+  text-decoration:none;transition:color .4s,letter-spacing .4s;
+  display:inline-block;
+}
+.note:hover{color:var(--brass-hot);letter-spacing:.012em}
+
+/* ── close ─────────────────────────────────────────────── */
+.ways{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-top:2.6rem}
+.way{
+  font-family:var(--f-mono);font-size:.76rem;letter-spacing:.12em;
+  text-decoration:none;color:var(--ink);
+  padding:.85rem 1.7rem;border:1px solid var(--line);border-radius:999px;
   display:inline-flex;align-items:center;gap:.55rem;
-  transition:.25s ease;border:1px solid transparent;cursor:pointer;
+  transition:.35s;backdrop-filter:blur(8px);background:rgba(255,255,255,.04);
 }
-.btn-primary{background:var(--ink);color:var(--ground);border-color:var(--ink)}
-.btn-primary:hover{background:var(--brass);border-color:var(--brass);transform:translateY(-2px)}
-.btn-ghost{border-color:var(--line-2);color:var(--ink)}
-.btn-ghost:hover{border-color:var(--brass);color:var(--brass)}
-.btn svg{width:14px;height:14px}
+.way:hover{border-color:var(--brass);color:var(--brass-hot);background:rgba(232,179,97,.1);transform:translateY(-2px)}
+.way svg{width:13px;height:13px}
 
-/* vertical japanese rail */
-.rail{
-  writing-mode:vertical-rl;font-family:var(--f-display);
-  font-size:.95rem;letter-spacing:.45em;color:var(--ink-3);
-  border-inline-start:1px solid var(--line);padding-inline-start:1.3rem;
-  align-self:end;margin-bottom:.5rem;
+.foot{
+  position:relative;z-index:10;text-align:center;
+  padding:0 var(--pad) 3rem;
 }
-@media(max-width:900px){.rail{display:none}}
-
-.scroll-hint{
-  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-  z-index:3;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--ink-3);display:grid;gap:.6rem;justify-items:center;
+.foot p{
+  font-family:var(--f-mono);font-size:.6rem;letter-spacing:.16em;
+  color:rgba(185,196,180,.5);margin:.4rem 0;
 }
-.scroll-hint span{display:block;width:1px;height:34px;background:linear-gradient(var(--line-2),transparent);animation:drop 2.6s ease-in-out infinite}
-@keyframes drop{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
 
-/* ============================================================ ETHOS STRIP */
-.ethos{
-  border-block:var(--rule);background:var(--paper-2);
-  padding:1.1rem 0;overflow:hidden;
+/* scroll cue */
+.cue{
+  position:fixed;bottom:1.7rem;left:50%;transform:translateX(-50%);z-index:40;
+  display:grid;justify-items:center;gap:.6rem;
+  font-family:var(--f-mono);font-size:.56rem;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(185,196,180,.55);
+  transition:opacity .6s;pointer-events:none;
 }
-.ethos-track{display:flex;gap:3.5rem;width:max-content;animation:slide 46s linear infinite}
-.ethos-track > *{
-  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
-  display:flex;align-items:center;gap:3.5rem;
-}
-.ethos-track i{width:4px;height:4px;background:var(--brass);border-radius:50%;flex:none}
-@keyframes slide{to{transform:translateX(-50%)}}
+.cue span{width:1px;height:30px;background:linear-gradient(rgba(232,179,97,.7),transparent);animation:fall 2.4s ease-in-out infinite}
+@keyframes fall{0%,100%{transform:scaleY(.35);transform-origin:top;opacity:.35}50%{transform:scaleY(1);opacity:1}}
+.cue.gone{opacity:0}
 
-/* ============================================================ SECTIONS */
-.sec{padding-block:clamp(4.5rem,10vw,8rem)}
-.sec-head{margin-bottom:3.2rem;max-width:var(--measure)}
-.sec-head h2{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em;margin:.7rem 0 1rem}
-.sec-head p{color:var(--ink-2);font-size:1.02rem}
-
-/* ---------- craft / services ---------- */
-.craft{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:var(--rule)}
-.craft-item{background:var(--paper);padding:2.2rem 1.8rem;transition:background .3s}
-.craft-item:hover{background:var(--paper-2)}
-.craft-item .n{
-  font-family:var(--f-mono);font-size:.68rem;color:var(--brass);
-  letter-spacing:.16em;display:block;margin-bottom:1.4rem;
-}
-.craft-item h3{font-size:1.24rem;margin-bottom:.7rem}
-.craft-item p{font-size:.91rem;color:var(--ink-2);line-height:1.62}
-
-/* ---------- disclosure log ---------- */
-.log{border:var(--rule);background:var(--paper);overflow-x:auto}
-.log table{width:100%;border-collapse:collapse;min-width:720px}
-.log thead th{
-  font-family:var(--f-mono);font-size:.65rem;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--ink-3);font-weight:500;
-  text-align:left;padding:1rem 1.3rem;border-bottom:1px solid var(--line-2);
-  background:var(--paper-2);white-space:nowrap;
-}
-.log tbody tr{border-bottom:var(--rule);transition:background .2s}
-.log tbody tr:last-child{border-bottom:0}
-.log tbody tr:hover{background:var(--paper-2)}
-.log td{padding:1.15rem 1.3rem;vertical-align:top;font-size:.9rem}
-.log .t-sub{color:var(--ink-2);font-size:.83rem;margin-top:.3rem;max-width:46ch;line-height:1.55}
-.log .t-title{font-weight:500;color:var(--ink)}
-.log .mono{font-family:var(--f-mono);font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
-.log .ref{color:var(--moss);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--moss) 35%,transparent)}
-.log .ref:hover{color:var(--brass);border-color:var(--brass)}
-
-.sev{
-  font-family:var(--f-mono);font-size:.65rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;padding:.28rem .6rem;border-radius:3px;white-space:nowrap;
-  display:inline-flex;align-items:center;gap:.4rem;
-}
-.sev::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
-.sev-crit{color:var(--sev-crit);background:color-mix(in srgb,var(--sev-crit) 12%,transparent)}
-.sev-high{color:var(--sev-high);background:color-mix(in srgb,var(--sev-high) 12%,transparent)}
-.sev-med{color:var(--sev-med);background:color-mix(in srgb,var(--sev-med) 12%,transparent)}
-.sev-low{color:var(--sev-low);background:color-mix(in srgb,var(--sev-low) 12%,transparent)}
-
-.log-note{
-  margin-top:1rem;font-size:.8rem;color:var(--ink-3);
-  display:flex;gap:.6rem;align-items:flex-start;
-}
-.log-note svg{width:14px;height:14px;flex:none;margin-top:.22rem;color:var(--ink-3)}
-
-/* ---------- writing ---------- */
-.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.6rem}
-.post{
-  background:var(--paper);border:var(--rule);border-radius:2px;
-  padding:1.9rem;display:flex;flex-direction:column;gap:.85rem;
-  text-decoration:none;transition:.3s ease;position:relative;
-}
-.post::before{
-  content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--brass);
-  transform:scaleY(0);transform-origin:top;transition:transform .35s ease;
-}
-.post:hover{transform:translateY(-3px);box-shadow:0 14px 34px -18px rgb(var(--shadow-c)/.4);border-color:var(--line-2)}
-.post:hover::before{transform:scaleY(1)}
-.post-meta{display:flex;gap:.8rem;align-items:center;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.post-meta .tag{color:var(--moss)}
-.post h3{font-size:1.3rem;line-height:1.28}
-.post p{font-size:.9rem;color:var(--ink-2);line-height:1.62;flex:1}
-.post .more{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);display:flex;align-items:center;gap:.4rem}
-.post .more svg{width:12px;height:12px;transition:transform .3s}
-.post:hover .more svg{transform:translateX(4px)}
-
-/* ---------- about ---------- */
-.about{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,6vw,5rem);align-items:start}
-@media(max-width:860px){.about{grid-template-columns:1fr}}
-.about-body p{color:var(--ink-2);margin-bottom:1.1rem;max-width:var(--measure)}
-.about-body p:first-of-type{font-size:1.12rem;color:var(--ink);font-family:var(--f-display);line-height:1.55}
-.creds{border:var(--rule);background:var(--paper);padding:1.8rem;display:grid;gap:1.4rem}
-.cred{display:grid;gap:.3rem}
-.cred dt{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
-.cred dd{margin:0;font-size:.94rem;color:var(--ink)}
-.cred dd small{display:block;color:var(--ink-3);font-size:.8rem;margin-top:.15rem}
-
-/* ---------- contact ---------- */
-.contact{
-  border:var(--rule);background:var(--paper);padding:clamp(2.2rem,6vw,4rem);
-  display:grid;gap:1.6rem;justify-items:start;position:relative;overflow:hidden;
-}
-.contact::after{
-  content:"";position:absolute;right:-60px;bottom:-60px;width:240px;height:240px;
-  border-radius:50%;background:radial-gradient(circle,var(--brass-soft),transparent 68%);
-  pointer-events:none;
-}
-.contact h2{font-size:clamp(1.9rem,4.4vw,2.9rem);letter-spacing:-.02em;max-width:18ch}
-.contact p{color:var(--ink-2);max-width:52ch}
-.contact-row{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center;position:relative;z-index:1}
-.mailto{font-family:var(--f-mono);font-size:.86rem;color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line-2);padding-bottom:2px}
-.mailto:hover{color:var(--brass);border-color:var(--brass)}
-
-/* ---------- footer ---------- */
-.foot{border-top:var(--rule);margin-top:clamp(4rem,9vw,7rem);padding-block:2.6rem 3.2rem}
-.foot-grid{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;align-items:center}
-.foot-links{display:flex;gap:1.4rem;flex-wrap:wrap}
-.foot-links a{font-size:.83rem;color:var(--ink-2);text-decoration:none}
-.foot-links a:hover{color:var(--brass)}
-.foot-note{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;color:var(--ink-3)}
-
-/* reveal */
-.rv{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.rv.in{opacity:1;transform:none}
+:focus-visible{outline:2px solid var(--brass);outline-offset:5px;border-radius:3px}
 
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
-  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .scene-in{opacity:1;transform:none}
 }
 </style>
 
-<!-- ══════════════════════════════════ NAV ══════════════════════════════════ -->
-<nav class="nav" id="nav">
+<canvas id="world" aria-hidden="true"></canvas>
+
+<nav class="nav">
   <a href="#top" class="brand">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z"/></svg>
     Mythbolt
   </a>
-  <div class="nav-links">
-    <a href="#craft">Craft</a>
-    <a href="#work">Disclosures</a>
-    <a href="#writing">Field Notes</a>
-    <a href="#about">About</a>
-    <a href="#contact" class="nav-cta">Start a scope</a>
-    <button class="theme-btn" id="themeBtn" aria-label="Switch colour theme" title="Switch theme">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
-        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
-      </svg>
+  <div class="nav-right">
+    <a href="#archive" class="hide-sm">Archive</a>
+    <a href="#notes" class="hide-sm">Notes</a>
+    <a href="#close">Contact</a>
+    <button class="tbtn" id="tbtn" aria-label="Switch between day and night" title="Day / night">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
     </button>
   </div>
 </nav>
 
-<!-- ══════════════════════════════════ HERO ══════════════════════════════════ -->
-<header class="hero" id="top">
-  <canvas id="sky" aria-hidden="true"></canvas>
-  <div class="hero-veil" aria-hidden="true"></div>
+<main class="scenes">
 
-  <div class="hero-inner wrap">
-    <div class="hero-grid">
-      <div>
-        <p class="eyebrow" style="margin-bottom:1.6rem">Offensive Security &middot; Independent Practice</p>
-        <h1>Myth<span class="b">bolt</span></h1>
-        <p class="hero-lede">
-          Guardians sleep under the moss until something reaches for what they protect.
-          We are the ones who <strong>go looking first</strong> &mdash; adversarial testing,
-          vulnerability research, and coordinated disclosure for systems that cannot afford surprises.
-        </p>
-        <div class="hero-actions">
-          <a href="#work" class="btn btn-primary">
-            See the disclosures
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-          <a href="#contact" class="btn btn-ghost">Start a scope</a>
-        </div>
-      </div>
-      <p class="rail" aria-hidden="true">神話の稲妻</p>
+  <!-- 1 · high sky -->
+  <section class="scene" id="top">
+    <div class="scene-in">
+      <h1 class="wordmark">Myth<span class="b">bolt</span></h1>
+      <p class="jp">神話の稲妻</p>
     </div>
-  </div>
+  </section>
 
-  <div class="scroll-hint"><span></span>Descend</div>
-</header>
-
-<!-- ══════════════════════════════════ ETHOS ══════════════════════════════════ -->
-<div class="ethos" aria-hidden="true">
-  <div class="ethos-track">
-    <div>Coordinated disclosure<i></i>Proof over speculation<i></i>Non-destructive testing<i></i>Read the body, not the status<i></i>Untested is not clean<i></i>Every finding reproduced twice<i></i></div>
-    <div>Coordinated disclosure<i></i>Proof over speculation<i></i>Non-destructive testing<i></i>Read the body, not the status<i></i>Untested is not clean<i></i>Every finding reproduced twice<i></i></div>
-  </div>
-</div>
-
-<main>
-<!-- ══════════════════════════════════ CRAFT ══════════════════════════════════ -->
-<section class="sec wrap" id="craft">
-  <div class="sec-head rv">
-    <p class="eyebrow">What we do</p>
-    <h2>Four ways in, one way of working</h2>
-    <p>Every engagement ends the same way: a finding you can reproduce from the report alone, or a documented reason the surface held.</p>
-  </div>
-
-  <div class="craft rv">
-    <article class="craft-item">
-      <span class="n">01</span>
-      <h3>Web &amp; API Testing</h3>
-      <p>Authentication logic, access control, injection, and the seams between them. Full-surface coverage with a written record of what was tested, not just what was found.</p>
-    </article>
-    <article class="craft-item">
-      <span class="n">02</span>
-      <h3>Vulnerability Research</h3>
-      <p>Protocol and parser work on telecom, embedded, and enterprise platforms. Where a patch fixed the proof-of-concept but not the vulnerability class, we find the variant.</p>
-    </article>
-    <article class="craft-item">
-      <span class="n">03</span>
-      <h3>Secure Code Review</h3>
-      <p>Source-level audits with semantic analysis and manual review of the paths that matter — deserialization, entity resolution, authorization ordering, trust boundaries.</p>
-    </article>
-    <article class="craft-item">
-      <span class="n">04</span>
-      <h3>Adversary Simulation</h3>
-      <p>Chained attack paths that reflect how a real intrusion unfolds: a low-severity primitive escalated, step by step, into the outcome that actually costs you something.</p>
-    </article>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════ WORK ══════════════════════════════════ -->
-<section class="sec wrap" id="work">
-  <div class="sec-head rv">
-    <p class="eyebrow">Selected disclosures</p>
-    <h2>The archive</h2>
-    <p>Findings reported through coordinated disclosure and bug-bounty programmes. Vendors are named only where the programme permits it. <em style="color:var(--ink-3);font-style:normal">Sample entries.</em></p>
-  </div>
-
-  <div class="log rv">
-    <table>
-      <thead>
-        <tr><th>Year</th><th>Subject</th><th>Class</th><th>Severity</th><th>Reference</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="mono">2026</td>
-          <td>
-            <div class="t-title">Aetherion Systems</div>
-            <div class="t-sub">Unauthenticated entity injection in a provisioning parser, permitting arbitrary file read from the application host.</div>
-          </td>
-          <td class="mono">XXE &middot; CWE-611</td>
-          <td><span class="sev sev-crit">Critical</span></td>
-          <td class="mono">MB&#8209;2026&#8209;014</td>
-        </tr>
-        <tr>
-          <td class="mono">2026</td>
-          <td>
-            <div class="t-title">Corvid Health</div>
-            <div class="t-sub">Authorization flaw in a records API allowing operations across a tenant boundary without the corresponding entitlement.</div>
-          </td>
-          <td class="mono">Broken access control</td>
-          <td><span class="sev sev-high">High</span></td>
-          <td class="mono">MB&#8209;2026&#8209;011</td>
-        </tr>
-        <tr>
-          <td class="mono">2026</td>
-          <td>
-            <div class="t-title">Northwind Freight</div>
-            <div class="t-sub">Server-side request forgery in a document renderer, chained to disclosure of internal service configuration.</div>
-          </td>
-          <td class="mono">SSRF &rarr; info disclosure</td>
-          <td><span class="sev sev-crit">Critical</span></td>
-          <td class="mono">MB&#8209;2026&#8209;009</td>
-        </tr>
-        <tr>
-          <td class="mono">2026</td>
-          <td>
-            <div class="t-title">Helix Payments</div>
-            <div class="t-sub">Absent rate limiting on an account-recovery endpoint, permitting exhaustive recovery of numeric verification codes.</div>
-          </td>
-          <td class="mono">Auth &middot; CWE-307</td>
-          <td><span class="sev sev-high">High</span></td>
-          <td class="mono">MB&#8209;2026&#8209;006</td>
-        </tr>
-        <tr>
-          <td class="mono">2025</td>
-          <td>
-            <div class="t-title">Pallas Robotics</div>
-            <div class="t-sub">Access-control and information-disclosure findings across a fleet management console, reported as a consolidated set.</div>
-          </td>
-          <td class="mono">Access control &middot; disclosure</td>
-          <td><span class="sev sev-med">Medium</span></td>
-          <td class="mono">MB&#8209;2025&#8209;031</td>
-        </tr>
-        <tr>
-          <td class="mono">2025</td>
-          <td>
-            <div class="t-title">Lanternfish Media</div>
-            <div class="t-sub">Cache key confusion on an authenticated profile route, allowing a response containing subscriber detail to be served to anonymous clients.</div>
-          </td>
-          <td class="mono">Web cache deception</td>
-          <td><span class="sev sev-med">Medium</span></td>
-          <td class="mono">MB&#8209;2025&#8209;022</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <p class="log-note rv">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
-    Entries under active embargo or non-disclosure are listed by class and severity only. Full write-ups follow once the vendor confirms remediation.
-  </p>
-</section>
-
-<!-- ══════════════════════════════════ WRITING ══════════════════════════════════ -->
-<section class="sec wrap" id="writing">
-  <div class="sec-head rv">
-    <p class="eyebrow">Field notes</p>
-    <h2>Writing on method</h2>
-    <p>Notes from live engagements — mostly about how findings get missed, and the discipline that stops it happening twice.</p>
-  </div>
-
-  <div class="posts">
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Parsers</span><span>12 min</span></div>
-      <h3>Patching the proof, not the bug</h3>
-      <p>A fix that closes the exact request in the report, and nothing adjacent to it, leaves the vulnerability class intact. On regression-testing the variant instead of re-running the original payload.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Access control</span><span>9 min</span></div>
-      <h3>The gate that was never there</h3>
-      <p>Bypassing a 401 and finding a route that never had a check are different bugs with different fixes. Most testing conflates them, and the second one is worth more.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Method</span><span>7 min</span></div>
-      <h3>Read the body, not the status code</h3>
-      <p>A 200 can carry an authorization error. A 401 on a path that does not exist tells you the gate is blanket, not route-specific. Status-only sweeps produce confident, wrong maps.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Method</span><span>6 min</span></div>
-      <h3>Invisible is not absent</h3>
-      <p>An interface that does not offer registration is not a server that refuses it. Disabled fields, unlinked flows, and deprecated versions all still answer when you ask them directly.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Tooling</span><span>11 min</span></div>
-      <h3>A tool exiting zero is not a completed scan</h3>
-      <p>Four separate tools failed silently in a single engagement and every one of them returned success. Positive controls, artifact assertions, and why coverage counts belong in the report.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-
-    <a href="#writing" class="post rv">
-      <div class="post-meta"><span class="tag">Disclosure</span><span>8 min</span></div>
-      <h3>Writing the report the triager wants</h3>
-      <p>Severity comes from the outcome you demonstrated, not the bug class you named. How to strip speculation out of a draft and keep what survives.</p>
-      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════ ABOUT ══════════════════════════════════ -->
-<section class="sec wrap" id="about">
-  <div class="about">
-    <div class="about-body rv">
-      <p class="eyebrow">About</p>
-      <h2 style="font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em;margin:.7rem 0 1.6rem">
-        A practice, not a scanner subscription
-      </h2>
-      <p>Mythbolt is an independent offensive-security practice working on web applications, APIs, distributed platforms, and embedded infrastructure.</p>
-      <p>Most security testing stops at the first thing that looks hardened. The interesting findings are usually one layer past that — in the disagreement between two components, in the version nobody deprecated properly, in the endpoint the interface stopped linking to but the server still answers.</p>
-      <p>Work is delivered as reproducible proof. Every report includes the exact requests, the expected and actual responses, the controls that rule out a false positive, and an honest account of what was tested and did not break. A clean result is a real result when it is earned.</p>
-      <p>Engagements run through public and private disclosure programmes as well as direct contract. If you want to talk about scope, the fastest route is <a href="https://www.linkedin.com/in/sandeshgg/" target="_blank" rel="noopener" style="color:var(--moss);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--moss) 40%,transparent)">LinkedIn</a> or the address below.</p>
+  <!-- 2 · the cloud sea -->
+  <section class="scene">
+    <div class="scene-in">
+      <p class="say">Something is always<br>reaching for it.</p>
     </div>
+  </section>
 
-    <dl class="creds rv">
-      <div class="cred">
-        <dt>Focus</dt>
-        <dd>Web &amp; API<small>Auth logic, access control, injection</small></dd>
+  <!-- 3 · the guardian -->
+  <section class="scene">
+    <div class="scene-in">
+      <p class="say">We go looking <em>first</em>.</p>
+      <div class="craft">
+        <span>Web</span><span>API</span><span>Protocol</span><span>Source</span>
       </div>
-      <div class="cred">
-        <dt>Research</dt>
-        <dd>Protocol &amp; parser<small>Provisioning and messaging interfaces</small></dd>
-      </div>
-      <div class="cred">
-        <dt>Also</dt>
-        <dd>Embedded &amp; RPC<small>Device interfaces, source review</small></dd>
-      </div>
-      <div class="cred">
-        <dt>Engagements</dt>
-        <dd>Programme &amp; contract<small>Public, private, and direct scope</small></dd>
-      </div>
-      <div class="cred">
-        <dt>Disclosure</dt>
-        <dd>Coordinated<small>90-day standard, vendor-first</small></dd>
-      </div>
-    </dl>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════ CONTACT ══════════════════════════════════ -->
-<section class="sec wrap" id="contact">
-  <div class="contact rv">
-    <p class="eyebrow">Engagements</p>
-    <h2>Tell us what you are afraid of losing</h2>
-    <p>Scoping starts with the outcome that would actually hurt — the data, the account, the service. We work backwards from there rather than starting with a checklist. Send a short note about the system and the boundary you want tested.</p>
-    <div class="contact-row">
-      <a href="mailto:hello@mythbolt.com" class="btn btn-primary">
-        hello@mythbolt.com
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/in/sandeshgg/" target="_blank" rel="noopener" class="btn btn-ghost">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 23 11 23 14.5V21h-4v-5.8c0-1.4-.03-3.2-2-3.2s-2.3 1.5-2.3 3.1V21h-4V9Z"/></svg>
-        LinkedIn
-      </a>
-      <a href="#work" class="mailto">PGP key on request</a>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- 4 · the grove -->
+  <section class="scene" id="archive">
+    <div class="scene-in">
+      <p class="tag">The archive</p>
+      <div class="grove">
+        <button class="lantern" style="--sz:74px;--glow:#FF7A55">
+          <span class="lcard"><b>Critical</b>Entity injection &rarr; arbitrary file read. <i>Aetherion Systems</i></span>
+          <span class="bulb"></span><span class="lyear">2026</span>
+        </button>
+        <button class="lantern" style="--sz:62px;--glow:#FFA24F">
+          <span class="lcard"><b>High</b>Records API crossed a tenant boundary. <i>Corvid Health</i></span>
+          <span class="bulb"></span><span class="lyear">2026</span>
+        </button>
+        <button class="lantern" style="--sz:74px;--glow:#FF7A55">
+          <span class="lcard"><b>Critical</b>Renderer SSRF &rarr; internal config. <i>Northwind Freight</i></span>
+          <span class="bulb"></span><span class="lyear">2026</span>
+        </button>
+        <button class="lantern" style="--sz:62px;--glow:#FFA24F">
+          <span class="lcard"><b>High</b>Recovery codes recoverable by exhaustion. <i>Helix Payments</i></span>
+          <span class="bulb"></span><span class="lyear">2026</span>
+        </button>
+        <button class="lantern" style="--sz:50px;--glow:#E8D45F">
+          <span class="lcard"><b>Medium</b>Console leaked fleet detail across accounts. <i>Pallas Robotics</i></span>
+          <span class="bulb"></span><span class="lyear">2025</span>
+        </button>
+        <button class="lantern" style="--sz:50px;--glow:#E8D45F">
+          <span class="lcard"><b>Medium</b>Cache served a subscriber page to anyone. <i>Lanternfish Media</i></span>
+          <span class="bulb"></span><span class="lyear">2025</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · the floor -->
+  <section class="scene" id="notes">
+    <div class="scene-in">
+      <p class="tag">Field notes</p>
+      <div class="notes">
+        <a class="note" href="#notes">Patching the proof, not the bug</a>
+        <a class="note" href="#notes">The gate that was never there</a>
+        <a class="note" href="#notes">Read the body, not the status code</a>
+        <a class="note" href="#notes">Invisible is not absent</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · dawn -->
+  <section class="scene" id="close">
+    <div class="scene-in">
+      <p class="say">Tell us what you<br>can&rsquo;t afford to lose.</p>
+      <div class="ways">
+        <a class="way" href="mailto:hello@mythbolt.com">
+          hello@mythbolt.com
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="way" href="https://www.linkedin.com/in/sandeshgg/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21.6 8.75 23 11 23 14.5V21h-4v-5.8c0-1.4-.03-3.2-2-3.2s-2.3 1.5-2.3 3.1V21h-4V9Z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
 </main>
 
-<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
-<footer class="foot wrap">
-  <div class="foot-grid">
-    <div style="display:grid;gap:.5rem">
-      <a href="#top" class="brand" style="font-size:.95rem">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z"/></svg>
-        Mythbolt
-      </a>
-      <p class="foot-note">Offensive security &middot; mythbolt.com</p>
-    </div>
-    <nav class="foot-links">
-      <a href="#craft">Craft</a>
-      <a href="#work">Disclosures</a>
-      <a href="#writing">Field Notes</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-      <a href="https://www.linkedin.com/in/sandeshgg/" target="_blank" rel="noopener">LinkedIn &#8599;</a>
-    </nav>
-    <p class="foot-note">&copy; 2026 Mythbolt</p>
-  </div>
-  <p class="foot-note" style="margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid var(--line);opacity:.72">
-    Client names and advisory references in the archive are illustrative placeholders pending disclosure clearance.
-  </p>
+<footer class="foot">
+  <p>Mythbolt &middot; mythbolt.com</p>
+  <p>Archive entries are illustrative pending disclosure clearance</p>
 </footer>
 
+<div class="cue" id="cue"><span></span>Descend</div>
+
 <script>
+(function(){
+"use strict";
+
+var cv=document.getElementById('world'), ctx=cv.getContext('2d');
+var W=0,H=0,DPR=1,T=0,P=0,Ptarget=0;
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var night=false;
+var pointer={x:.5,y:.5,has:false};
+
 /* ── theme ─────────────────────────────────────────────── */
-(function(){
-  var root=document.documentElement,btn=document.getElementById('themeBtn');
-  var saved=null;
-  try{saved=localStorage.getItem('mb-theme')}catch(e){}
-  if(saved==='dark'||saved==='light')root.setAttribute('data-theme',saved);
-  btn.addEventListener('click',function(){
-    var cur=root.getAttribute('data-theme');
-    if(!cur)cur=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
-    var next=cur==='dark'?'light':'dark';
-    root.setAttribute('data-theme',next);
-    try{localStorage.setItem('mb-theme',next)}catch(e){}
-    drawSky();
-  });
-})();
+var root=document.documentElement, tbtn=document.getElementById('tbtn');
+try{
+  var s=localStorage.getItem('mb-night');
+  night = s!==null ? s==='1' : matchMedia('(prefers-color-scheme: dark)').matches;
+}catch(e){ night=matchMedia('(prefers-color-scheme: dark)').matches; }
+tbtn.addEventListener('click',function(){
+  night=!night;
+  try{localStorage.setItem('mb-night',night?'1':'0')}catch(e){}
+});
 
-/* ── nav solidity ──────────────────────────────────────── */
-(function(){
-  var nav=document.getElementById('nav');
-  var set=function(){nav.dataset.solid=String(scrollY>40)};
-  set();addEventListener('scroll',set,{passive:true});
-})();
-
-/* ── reveal ────────────────────────────────────────────── */
-(function(){
-  var els=document.querySelectorAll('.rv');
-  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
-  var io=new IntersectionObserver(function(entries){
-    entries.forEach(function(en,i){
-      if(en.isIntersecting){
-        var d=en.target.parentElement&&en.target.parentElement.classList.contains('posts')?i*60:0;
-        setTimeout(function(){en.target.classList.add('in')},d);
-        io.unobserve(en.target);
-      }
-    });
-  },{rootMargin:'0px 0px -12% 0px',threshold:.05});
-  els.forEach(function(e){io.observe(e)});
-})();
-
-/* ── the sky ───────────────────────────────────────────────
-   Cumulus in the Ghibli manner: big, well-defined, softly lit
-   from above. Three depths drifting at different speeds, with
-   a guardian's island held in the middle distance.
+/* ── palette: keyframed by depth ───────────────────────────
+   Each stop is [top, bottom]. The descent interpolates
+   between them, so the whole page is one continuous sky.
    ──────────────────────────────────────────────────────── */
-var cv=document.getElementById('sky'),ctx=cv.getContext('2d');
-var W=0,H=0,DPR=1,clouds=[],t=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* the descent drops into forest early, so the grove has darkness to glow against */
+var DAY=[
+  [0.00,[124,180,226],[198,228,244]],
+  [0.22,[150,200,232],[252,222,172]],
+  [0.42,[236,176,104],[126,150,96]],
+  [0.62,[62,102,66],[26,58,38]],
+  [1.00,[16,38,26],[7,17,12]]
+];
+var NIGHT=[
+  [0.00,[22,35,58],[42,60,86]],
+  [0.22,[30,48,72],[46,62,84]],
+  [0.46,[36,48,63],[30,44,42]],
+  [0.72,[26,42,34],[16,28,22]],
+  [1.00,[12,22,17],[5,10,8]]
+];
+function lerp(a,b,t){return a+(b-a)*t}
+function ramp(stops,p){
+  var i=0; while(i<stops.length-2 && p>stops[i+1][0]) i++;
+  var a=stops[i], b=stops[i+1];
+  var t=(p-a[0])/(b[0]-a[0]); t=Math.max(0,Math.min(1,t));
+  var top=[0,1,2].map(function(k){return lerp(a[1][k],b[1][k],t)});
+  var bot=[0,1,2].map(function(k){return lerp(a[2][k],b[2][k],t)});
+  return [top,bot];
+}
+function rgb(c,a){return 'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+(a===undefined?1:a)+')'}
 
-function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+/* ── inhabitants ───────────────────────────────────────── */
+var clouds=[], gliders=[], spirits=[], motes=[], trees=[];
 
-function seedClouds(){
+function seed(){
   clouds=[];
-  var layers=[
-    {n:5,y:[.08,.34],s:[.55,.95],v:.055,a:.34},
-    {n:4,y:[.26,.52],s:[.95,1.5],v:.10,a:.60},
-    {n:3,y:[.44,.66],s:[1.5,2.3],v:.17,a:.85}
-  ];
-  layers.forEach(function(L,li){
-    for(var i=0;i<L.n;i++){
-      clouds.push({
-        x:Math.random()*1.5-.25,
-        y:L.y[0]+Math.random()*(L.y[1]-L.y[0]),
-        s:L.s[0]+Math.random()*(L.s[1]-L.s[0]),
-        v:L.v*(.75+Math.random()*.5),
-        a:L.a*(.8+Math.random()*.35),
-        d:li,
-        puffs:(function(){
-          var p=[],c=4+Math.floor(Math.random()*3);
-          for(var k=0;k<c;k++){
-            p.push({dx:(k-(c-1)/2)*.52+(Math.random()-.5)*.22,
-                    dy:(Math.random()-.5)*.30,
-                    r:.46+Math.random()*.42});
-          }
-          return p;
-        })()
-      });
-    }
-  });
-  clouds.sort(function(a,b){return a.d-b.d});
+  for(var i=0;i<11;i++){
+    var d=Math.random();
+    clouds.push({
+      x:Math.random()*1.6-.3,
+      depth:.02+Math.random()*.40,          // clouds belong to the sky only
+      band:.10+Math.random()*.70,           // vertical position on screen
+      s:(.45+d*1.35),
+      v:(.012+d*.05),
+      a:.30+d*.52,
+      puffs:(function(){
+        var p=[],n=4+((Math.random()*3)|0);
+        for(var k=0;k<n;k++)p.push({dx:(k-(n-1)/2)*.5+(Math.random()-.5)*.2,dy:(Math.random()-.5)*.28,r:.44+Math.random()*.4});
+        return p;
+      })()
+    });
+  }
+  clouds.sort(function(a,b){return a.s-b.s});
+
+  gliders=[];
+  for(var g=0;g<7;g++){
+    gliders.push({x:Math.random(),y:.1+Math.random()*.5,depth:Math.random()*.4,
+      v:.02+Math.random()*.05,s:.5+Math.random(),ph:Math.random()*6.28});
+  }
+
+  spirits=[];
+  for(var sp=0;sp<9;sp++){
+    spirits.push({
+      bx:Math.random(),by:.12+Math.random()*.74,
+      depth:.66+Math.random()*.30,
+      ph:Math.random()*6.28,
+      sp:.28+Math.random()*.55,
+      r:3.2+Math.random()*3.4,
+      ox:0,oy:0
+    });
+  }
+
+  motes=[];
+  for(var m=0;m<70;m++){
+    motes.push({x:Math.random(),y:Math.random(),depth:Math.random(),
+      r:.6+Math.random()*1.7,ph:Math.random()*6.28,sp:.15+Math.random()*.5});
+  }
+
+  /* two ranks of trees, evenly spread with jitter so they read as a
+     treeline rather than a pile */
+  trees=[];
+  var FAR=9, NEAR=7;
+  for(var t=0;t<FAR;t++){
+    trees.push({x:(t+.5)/FAR+(Math.random()-.5)*.07,
+      h:.30+Math.random()*.16, w:.026+Math.random()*.014, layer:0});
+  }
+  for(var t2=0;t2<NEAR;t2++){
+    trees.push({x:(t2+.5)/NEAR+(Math.random()-.5)*.09,
+      h:.50+Math.random()*.26, w:.042+Math.random()*.022, layer:1});
+  }
 }
 
-function cloud(c){
-  var base=Math.min(W,H)*0.13*c.s;
-  var px=c.x*W, py=c.y*H;
-  var cl=css('--cloud'), sh=css('--cloud-shade');
-
-  ctx.save();
-  ctx.globalAlpha=c.a;
-
-  // shaded underside
-  ctx.fillStyle=sh;
-  c.puffs.forEach(function(p){
-    ctx.beginPath();
-    ctx.arc(px+p.dx*base, py+p.dy*base+base*0.16, p.r*base, 0, 6.2832);
-    ctx.fill();
-  });
-  // lit body
-  ctx.fillStyle=cl;
-  c.puffs.forEach(function(p){
-    ctx.beginPath();
-    ctx.arc(px+p.dx*base, py+p.dy*base, p.r*base, 0, 6.2832);
-    ctx.fill();
-  });
-  // flat-ish base, the Ghibli tell
-  ctx.beginPath();
-  ctx.ellipse(px, py+base*0.30, base*1.28, base*0.30, 0, 0, 6.2832);
-  ctx.fill();
-
+/* ── drawing ───────────────────────────────────────────── */
+function drawCloud(c,alpha){
+  var base=Math.min(W,H)*0.14*c.s;
+  var px=c.x*W, py=c.band*H;
+  ctx.save(); ctx.globalAlpha=alpha*c.a;
+  var lit = night ? 'rgba(96,122,158,1)' : 'rgba(255,255,255,1)';
+  var shd = night ? 'rgba(48,66,94,1)'  : 'rgba(196,214,230,1)';
+  ctx.fillStyle=shd;
+  c.puffs.forEach(function(p){ctx.beginPath();ctx.arc(px+p.dx*base,py+p.dy*base+base*.17,p.r*base,0,6.2832);ctx.fill()});
+  ctx.fillStyle=lit;
+  c.puffs.forEach(function(p){ctx.beginPath();ctx.arc(px+p.dx*base,py+p.dy*base,p.r*base,0,6.2832);ctx.fill()});
+  ctx.beginPath();ctx.ellipse(px,py+base*.3,base*1.25,base*.3,0,0,6.2832);ctx.fill();
   ctx.restore();
 }
 
-/* the guardian on its island — small, quiet, in the middle distance */
-function island(){
-  var cx=W*0.79, cy=H*0.60, u=Math.min(W,H)*0.001;
-  if(W<760){cx=W*0.72;cy=H*0.66;u=Math.min(W,H)*0.00085}
-  var bob=reduce?0:Math.sin(t*0.0006)*u*7;
+function drawGlider(g,alpha){
+  var x=g.x*W, y=g.y*H, u=Math.min(W,H)*.006*g.s;
+  var flap=Math.sin(T*.004+g.ph)*.45;
+  ctx.save();
+  ctx.globalAlpha=alpha*.7;
+  ctx.strokeStyle=night?'rgba(200,214,230,.85)':'rgba(58,74,64,.8)';
+  ctx.lineWidth=Math.max(1,u*.32); ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(x-u*3.2,y+flap*u*1.8);
+  ctx.quadraticCurveTo(x-u*1.2,y-u*1.2,x,y);
+  ctx.quadraticCurveTo(x+u*1.2,y-u*1.2,x+u*3.2,y+flap*u*1.8);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* the guardian, held in the cloud sea */
+function drawGuardian(alpha){
+  if(alpha<=0.004) return;
+  var u=Math.min(W,H)*.0016;
+  var cx=W*(W<760?.5:.70);
+  // rises through frame as we descend past it
+  var local=(P-0.14)/0.30;
+  var cy=H*(0.30+local*0.74);
+  var bob=reduce?0:Math.sin(T*.0007)*u*9;
   cy+=bob;
 
-  ctx.save();
-  ctx.globalAlpha=.92;
+  ctx.save(); ctx.globalAlpha=alpha;
 
-  // rock underside — a wedge, wider at top
-  ctx.fillStyle=css('--island-rock');
-  ctx.beginPath();
-  ctx.moveTo(cx-92*u, cy);
-  ctx.lineTo(cx+96*u, cy);
-  ctx.lineTo(cx+52*u, cy+58*u);
-  ctx.lineTo(cx+14*u, cy+96*u);
-  ctx.lineTo(cx-24*u, cy+54*u);
-  ctx.lineTo(cx-70*u, cy+30*u);
-  ctx.closePath();
-  ctx.fill();
+  var rock  = night?'rgba(38,34,28,1)':'rgba(112,98,76,1)';
+  var green = night?'rgba(28,52,42,1)':'rgba(70,108,80,1)';
+  var dark  = night?'rgba(16,32,26,1)':'rgba(40,72,54,1)';
 
-  // green cap
-  ctx.fillStyle=css('--island');
+  // island wedge
+  ctx.fillStyle=rock;
   ctx.beginPath();
-  ctx.ellipse(cx, cy-3*u, 96*u, 17*u, 0, 0, 6.2832);
-  ctx.fill();
-  ctx.fillStyle=css('--island-2');
-  ctx.beginPath();
-  ctx.ellipse(cx, cy+3*u, 96*u, 12*u, 0, 0, 6.2832);
-  ctx.fill();
+  ctx.moveTo(cx-104*u,cy); ctx.lineTo(cx+108*u,cy);
+  ctx.lineTo(cx+58*u,cy+66*u); ctx.lineTo(cx+16*u,cy+112*u);
+  ctx.lineTo(cx-28*u,cy+62*u); ctx.lineTo(cx-80*u,cy+34*u);
+  ctx.closePath(); ctx.fill();
 
-  // two trees
-  ctx.fillStyle=css('--island-2');
-  [[-46,-9,13],[38,-7,10]].forEach(function(p){
-    ctx.fillRect(cx+p[0]*u-1.6*u, cy+p[1]*u-16*u, 3.2*u, 16*u);
-    ctx.beginPath();
-    ctx.arc(cx+p[0]*u, cy+p[1]*u-22*u, p[2]*u, 0, 6.2832);
-    ctx.fill();
+  // grass cap
+  ctx.fillStyle=green;
+  ctx.beginPath(); ctx.ellipse(cx,cy-4*u,108*u,19*u,0,0,6.2832); ctx.fill();
+  ctx.fillStyle=dark;
+  ctx.beginPath(); ctx.ellipse(cx,cy+4*u,108*u,13*u,0,0,6.2832); ctx.fill();
+
+  // trees
+  ctx.fillStyle=dark;
+  [[-58,-10,14],[46,-8,11],[-14,-11,8]].forEach(function(p){
+    ctx.fillRect(cx+p[0]*u-1.7*u,cy+p[1]*u-17*u,3.4*u,17*u);
+    ctx.beginPath(); ctx.arc(cx+p[0]*u,cy+p[1]*u-24*u,p[2]*u,0,6.2832); ctx.fill();
   });
 
-  // the guardian — standing, arms at rest, head bowed
-  var gx=cx-2*u, gy=cy-10*u;
-  ctx.fillStyle=css('--island-2');
-  ctx.fillRect(gx-9*u, gy-30*u, 18*u, 22*u);            // torso
-  ctx.fillRect(gx-15*u, gy-28*u, 5*u, 20*u);            // arm L
-  ctx.fillRect(gx+10*u, gy-28*u, 5*u, 20*u);            // arm R
-  ctx.beginPath();                                       // head
-  ctx.arc(gx, gy-36*u, 8*u, 0, 6.2832);
-  ctx.fill();
-  ctx.fillRect(gx-6*u, gy-8*u, 5*u, 8*u);               // leg L
-  ctx.fillRect(gx+1*u, gy-8*u, 5*u, 8*u);               // leg R
+  // the guardian
+  var gx=cx+4*u, gy=cy-12*u;
+  ctx.fillStyle=dark;
+  ctx.fillRect(gx-10*u,gy-34*u,20*u,25*u);
+  ctx.fillRect(gx-17*u,gy-32*u,5.5*u,23*u);
+  ctx.fillRect(gx+11.5*u,gy-32*u,5.5*u,23*u);
+  ctx.beginPath(); ctx.arc(gx,gy-41*u,9*u,0,6.2832); ctx.fill();
+  ctx.fillRect(gx-7*u,gy-9*u,5.5*u,9*u);
+  ctx.fillRect(gx+1.5*u,gy-9*u,5.5*u,9*u);
+  // moss on the shoulder
+  ctx.fillStyle=night?'rgba(44,78,60,.85)':'rgba(126,166,118,.85)';
+  ctx.beginPath(); ctx.arc(gx-8*u,gy-33*u,5*u,0,6.2832); ctx.fill();
 
-  // the eye — the one lit thing on the page besides the accent
-  var pulse=reduce?.85:(.62+Math.sin(t*0.0016)*0.26);
-  ctx.globalAlpha=pulse;
-  ctx.fillStyle=css('--brass-lit');
-  ctx.beginPath();
-  ctx.arc(gx+3.2*u, gy-37*u, 2.3*u, 0, 6.2832);
-  ctx.fill();
-  ctx.globalAlpha=pulse*0.26;
-  ctx.beginPath();
-  ctx.arc(gx+3.2*u, gy-37*u, 7*u, 0, 6.2832);
-  ctx.fill();
+  // the eye
+  var pulse=reduce?.9:(.6+Math.sin(T*.0018)*.3);
+  ctx.globalAlpha=alpha*pulse;
+  ctx.fillStyle='#FFD08A';
+  ctx.beginPath(); ctx.arc(gx+3.4*u,gy-42*u,2.6*u,0,6.2832); ctx.fill();
+  ctx.globalAlpha=alpha*pulse*.28;
+  ctx.beginPath(); ctx.arc(gx+3.4*u,gy-42*u,9*u,0,6.2832); ctx.fill();
+  ctx.globalAlpha=alpha*pulse*.1;
+  ctx.beginPath(); ctx.arc(gx+3.4*u,gy-42*u,22*u,0,6.2832); ctx.fill();
 
   ctx.restore();
 }
 
-function drawSky(){
-  if(!W||!H)return;
-  var g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,css('--sky-top'));
-  g.addColorStop(.54,css('--sky-mid'));
-  g.addColorStop(1,css('--sky-low'));
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,W,H);
-  clouds.forEach(cloud);
-  island();
-}
+/* canopy silhouettes rising from the bottom as we descend */
+function drawTrees(alpha,layer,tint){
+  if(alpha<=0.004) return;
+  ctx.save(); ctx.globalAlpha=alpha;
+  ctx.fillStyle=tint;
+  trees.forEach(function(t){
+    if(t.layer!==layer) return;
+    var x=t.x*W, w=t.w*W, h=t.h*H;
+    var base=H+H*.05;
+    var top=base-h;
 
-function resize(){
-  DPR=Math.min(devicePixelRatio||1,2);
-  W=cv.clientWidth;H=cv.clientHeight;
-  cv.width=W*DPR;cv.height=H*DPR;
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-  drawSky();
-}
+    // tapered trunk
+    ctx.beginPath();
+    ctx.moveTo(x-w*.13,base);
+    ctx.lineTo(x-w*.055,top+h*.30);
+    ctx.lineTo(x+w*.055,top+h*.30);
+    ctx.lineTo(x+w*.13,base);
+    ctx.closePath(); ctx.fill();
 
-function loop(ts){
-  t=ts||0;
-  clouds.forEach(function(c){
-    c.x+=c.v/W*1.9;
-    if(c.x>1.42)c.x=-.42;
+    // canopy: three tiers, widest at the bottom — a soft conifer
+    var tiers=[[.30,1.00],[.52,.76],[.74,.48]];
+    tiers.forEach(function(tr){
+      var cy=top+h*(1-tr[0])*0+top+h*0; // anchor at top
+      cy=top+h*(1-tr[0]);
+      var half=w*tr[1];
+      ctx.beginPath();
+      ctx.moveTo(x-half,cy);
+      ctx.quadraticCurveTo(x-half*.72,cy-h*.16,x,cy-h*.21);
+      ctx.quadraticCurveTo(x+half*.72,cy-h*.16,x+half,cy);
+      ctx.quadraticCurveTo(x,cy+h*.05,x-half,cy);
+      ctx.closePath(); ctx.fill();
+    });
   });
-  drawSky();
-  requestAnimationFrame(loop);
+  ctx.restore();
 }
 
-seedClouds();
-resize();
-addEventListener('resize',resize);
-if(reduce){drawSky()}else{requestAnimationFrame(loop)}
+/* spirits — small, pale, curious; they lean toward the cursor */
+function drawSpirit(s,alpha){
+  var drift=Math.sin(T*.0009*s.sp+s.ph);
+  var x=(s.bx*1.1-.05)*W + drift*W*.035 + s.ox;
+  var y=s.by*H + Math.cos(T*.0007*s.sp+s.ph)*H*.05 + s.oy;
+  var r=s.r*(Math.min(W,H)/900+.55);
+
+  ctx.save(); ctx.globalAlpha=alpha;
+  // soft halo, layered so the edge never reads as a disc
+  var halo=ctx.createRadialGradient(x,y,r*.5,x,y,r*3.4);
+  halo.addColorStop(0, night?'rgba(190,224,206,.20)':'rgba(255,255,255,.24)');
+  halo.addColorStop(1, night?'rgba(190,224,206,0)':'rgba(255,255,255,0)');
+  ctx.fillStyle=halo;
+  ctx.beginPath(); ctx.arc(x,y,r*3.4,0,6.2832); ctx.fill();
+  // body
+  ctx.fillStyle=night?'rgba(202,228,210,.66)':'rgba(250,252,246,.74)';
+  ctx.beginPath(); ctx.arc(x,y,r,0,6.2832); ctx.fill();
+  // eyes — small, and they lean toward the cursor
+  var lean = pointer.has ? Math.max(-1,Math.min(1,(pointer.x*W-x)/(W*.3))) : 0;
+  ctx.fillStyle=night?'rgba(12,22,18,.72)':'rgba(28,42,34,.66)';
+  var ex=r*.32, ey=-r*.06;
+  ctx.beginPath(); ctx.arc(x-ex+lean*r*.16,y+ey,r*.115,0,6.2832); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+ex+lean*r*.16,y+ey,r*.115,0,6.2832); ctx.fill();
+  ctx.restore();
+}
+
+function drawMote(m,alpha){
+  var x=((m.x + Math.sin(T*.0004*m.sp+m.ph)*.04)%1+1)%1*W;
+  var y=((m.y - T*.000012*m.sp)%1+1)%1*H;
+  var tw=.4+Math.sin(T*.003*m.sp+m.ph)*.6;
+  ctx.save(); ctx.globalAlpha=alpha*Math.max(0,tw);
+  ctx.fillStyle='#FFD08A';
+  ctx.beginPath(); ctx.arc(x,y,m.r,0,6.2832); ctx.fill();
+  ctx.globalAlpha=alpha*Math.max(0,tw)*.25;
+  ctx.beginPath(); ctx.arc(x,y,m.r*4,0,6.2832); ctx.fill();
+  ctx.restore();
+}
+
+/* fade helper: 1 inside [a,b], ramping over `f` */
+function band(p,a,b,f){
+  f=f||.12;
+  if(p<a-f||p>b+f) return 0;
+  if(p<a) return (p-(a-f))/f;
+  if(p>b) return 1-((p-b)/f);
+  return 1;
+}
+
+function frame(ts){
+  T=ts||0;
+  // eased scroll
+  P += (Ptarget-P)*(reduce?1:0.075);
+
+  var pal=ramp(night?NIGHT:DAY,P);
+  var g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,rgb(pal[0])); g.addColorStop(1,rgb(pal[1]));
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+  // sun / moon, only up high
+  var lum=band(P,0,.30,.18);
+  if(lum>.004){
+    var lx=W*.20, ly=H*.24;
+    ctx.save(); ctx.globalAlpha=lum;
+    var c0=night?'rgba(226,236,248,':'rgba(255,246,220,';
+    ctx.fillStyle=c0+'.95)';
+    ctx.beginPath(); ctx.arc(lx,ly,Math.min(W,H)*.045,0,6.2832); ctx.fill();
+    ctx.fillStyle=c0+'.13)';
+    ctx.beginPath(); ctx.arc(lx,ly,Math.min(W,H)*.14,0,6.2832); ctx.fill();
+    ctx.fillStyle=c0+'.06)';
+    ctx.beginPath(); ctx.arc(lx,ly,Math.min(W,H)*.26,0,6.2832); ctx.fill();
+    ctx.restore();
+  }
+
+  // gliders, high only
+  var ga=band(P,0,.26,.14);
+  if(ga>.004) gliders.forEach(function(gl){
+    if(!reduce){ gl.x+=gl.v/W*2.4; if(gl.x>1.15) gl.x=-.15; }
+    drawGlider(gl,ga);
+  });
+
+  // clouds — each lives at its own depth
+  clouds.forEach(function(c){
+    // hard ceiling: nothing cloudlike survives past the canopy line
+    var a=band(P,Math.max(0,c.depth-.18),Math.min(c.depth+.06,.38),.10);
+    if(a<=.004) return;
+    if(!reduce){ c.x+=c.v/W*2.2; if(c.x>1.45) c.x=-.45; }
+    drawCloud(c,a);
+  });
+
+  // the guardian
+  drawGuardian(band(P,.14,.40,.13));
+
+  // canopy: far layer then near layer
+  drawTrees(band(P,.66,1.04,.14),0, night?'rgba(16,32,25,.9)':'rgba(74,104,72,.88)');
+  drawTrees(band(P,.78,1.08,.12),1, night?'rgba(7,17,13,.96)':'rgba(32,56,40,.95)');
+
+  // spirits in the lower world
+  spirits.forEach(function(s){
+    var a=band(P,s.depth-.14,1.06,.15)*.8;
+    if(a<=.004) return;
+    if(pointer.has && !reduce){
+      var sx=(s.bx*1.1-.05)*W, sy=s.by*H;
+      var dx=pointer.x*W-sx, dy=pointer.y*H-sy;
+      var d=Math.hypot(dx,dy)||1;
+      var pull=Math.max(0,1-d/(Math.min(W,H)*.55));
+      s.ox += ((dx/d)*pull*Math.min(W,H)*.055 - s.ox)*.03;
+      s.oy += ((dy/d)*pull*Math.min(W,H)*.055 - s.oy)*.03;
+    }
+    drawSpirit(s,a);
+  });
+
+  // motes / fireflies, strongest at the floor
+  var ma=band(P,.50,1.08,.2);
+  if(ma>.004) motes.forEach(function(m){ drawMote(m,ma*.85) });
+
+  requestAnimationFrame(frame);
+}
+
+/* ── plumbing ──────────────────────────────────────────── */
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  W=cv.clientWidth; H=cv.clientHeight;
+  cv.width=W*DPR; cv.height=H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+function onScroll(){
+  var max=document.body.scrollHeight-innerHeight;
+  Ptarget = max>0 ? Math.max(0,Math.min(1,scrollY/max)) : 0;
+  cue.classList.toggle('gone',scrollY>120);
+}
+var cue=document.getElementById('cue');
+
+addEventListener('resize',resize,{passive:true});
+addEventListener('scroll',onScroll,{passive:true});
+addEventListener('pointermove',function(e){
+  pointer.x=e.clientX/innerWidth; pointer.y=e.clientY/innerHeight; pointer.has=true;
+},{passive:true});
+addEventListener('pointerleave',function(){pointer.has=false},{passive:true});
+
+/* scene reveals */
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:.28});
+document.querySelectorAll('.scene').forEach(function(s){io.observe(s)});
+
+seed(); resize(); onScroll();
+if(P===0) Ptarget=0, P=0;
+requestAnimationFrame(frame);
+})();
 </script>
 
 </body>
