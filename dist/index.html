@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mythbolt — independent offensive security practice. Adversarial testing, vulnerability research, and coordinated disclosure.">
+<meta name="theme-color" content="#F2EFE4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131E1D" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Mythbolt">
+<meta property="og:description" content="Adversarial testing, vulnerability research, and coordinated disclosure for systems that cannot afford surprises.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mythbolt.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23C08A3E' d='M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z'/%3E%3C/svg%3E">
+<title>Mythbolt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<style>
+/* ============================================================
+   MYTHBOLT — tokens
+   Daylight: Laputa at altitude. Night: the storm sequence.
+   ============================================================ */
+:root{
+  --ground:#F2EFE4;
+  --ground-2:#E7E3D3;
+  --paper:#FBF9F2;
+  --paper-2:#F5F2E7;
+  --ink:#1C2A24;
+  --ink-2:#4C5C52;
+  --ink-3:#7E8C82;
+  --moss:#3E6B52;
+  --moss-soft:#DCE6DA;
+  --sky:#6E9BC4;
+  --sky-soft:#DEE9F3;
+  --brass:#B07C31;
+  --brass-lit:#C08A3E;
+  --brass-soft:#F1E2C6;
+  --line:#D6D1BF;
+  --line-2:#C4BEA8;
+
+  --sev-crit:#A83E28;
+  --sev-high:#B26A34;
+  --sev-med:#8A7B33;
+  --sev-low:#54725A;
+
+  --shadow-c:26 40 34;
+
+  --sky-top:#A8CBE4;
+  --sky-mid:#CFE2EE;
+  --sky-low:#EFEADC;
+  --cloud:#FFFFFF;
+  --cloud-shade:#C9D9E6;
+  --island:#3E6B52;
+  --island-2:#2C4F3C;
+  --island-rock:#8A7A5E;
+
+  --f-display:"Zen Old Mincho","Hiragino Mincho ProN",Georgia,serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --measure:64ch;
+  --pad:clamp(1.25rem,4vw,2.5rem);
+  --rule:1px solid var(--line);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#131E1D;
+    --ground-2:#0D1615;
+    --paper:#1B2926;
+    --paper-2:#16231F;
+    --ink:#E9EADF;
+    --ink-2:#A6B4A9;
+    --ink-3:#75857A;
+    --moss:#74A886;
+    --moss-soft:#22362C;
+    --sky:#8FB6D8;
+    --sky-soft:#1C2C39;
+    --brass:#DFA75F;
+    --brass-lit:#EDBD7C;
+    --brass-soft:#3A2D19;
+    --line:#2B3934;
+    --line-2:#3A4A44;
+
+    --sev-crit:#D9705A;
+    --sev-high:#DB9A5F;
+    --sev-med:#BFAE5E;
+    --sev-low:#7FA487;
+
+    --shadow-c:0 0 0;
+
+    --sky-top:#16233A;
+    --sky-mid:#1E3048;
+    --sky-low:#243043;
+    --cloud:#3E5570;
+    --cloud-shade:#26374F;
+    --island:#25453A;
+    --island-2:#182F28;
+    --island-rock:#453C2E;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#131E1D; --ground-2:#0D1615; --paper:#1B2926; --paper-2:#16231F;
+  --ink:#E9EADF; --ink-2:#A6B4A9; --ink-3:#75857A;
+  --moss:#74A886; --moss-soft:#22362C; --sky:#8FB6D8; --sky-soft:#1C2C39;
+  --brass:#DFA75F; --brass-lit:#EDBD7C; --brass-soft:#3A2D19;
+  --line:#2B3934; --line-2:#3A4A44;
+  --sev-crit:#D9705A; --sev-high:#DB9A5F; --sev-med:#BFAE5E; --sev-low:#7FA487;
+  --shadow-c:0 0 0;
+  --sky-top:#16233A; --sky-mid:#1E3048; --sky-low:#243043;
+  --cloud:#3E5570; --cloud-shade:#26374F;
+  --island:#25453A; --island-2:#182F28; --island-rock:#453C2E;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* paper grain — the hand-painted surface */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body::after{mix-blend-mode:overlay;opacity:.07}}
+:root[data-theme="dark"] body::after{mix-blend-mode:overlay;opacity:.07}
+
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;line-height:1.18;text-wrap:balance;margin:0}
+p{margin:0}
+a{color:inherit}
+
+.wrap{width:min(1180px,100% - 2*var(--pad));margin-inline:auto}
+.eyebrow{
+  font-family:var(--f-mono);font-size:.7rem;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--brass);
+}
+.jp{font-family:var(--f-display);letter-spacing:.3em}
+
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:2px}
+
+/* ============================================================ NAV */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:100;
+  display:flex;align-items:center;gap:2rem;
+  padding:1rem var(--pad);
+  transition:background .4s ease,border-color .4s ease,backdrop-filter .4s ease;
+  border-bottom:1px solid transparent;
+}
+.nav[data-solid="true"]{
+  background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom-color:var(--line);
+}
+.brand{
+  font-family:var(--f-display);font-weight:700;font-size:1.08rem;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+  display:flex;align-items:center;gap:.55rem;color:var(--ink);
+}
+.brand svg{width:20px;height:20px;color:var(--brass);flex:none}
+.nav-links{display:flex;gap:1.6rem;margin-left:auto;align-items:center}
+.nav-links a{
+  font-size:.83rem;text-decoration:none;color:var(--ink-2);
+  letter-spacing:.04em;transition:color .2s;position:relative;padding-block:.2rem;
+}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+  background:var(--brass);transition:width .3s ease;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{width:100%}
+.theme-btn{
+  background:none;border:1px solid var(--line-2);border-radius:999px;
+  width:34px;height:34px;display:grid;place-items:center;cursor:pointer;
+  color:var(--ink-2);transition:.25s;flex:none;
+}
+.theme-btn:hover{color:var(--brass);border-color:var(--brass)}
+.theme-btn svg{width:15px;height:15px}
+@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}}
+
+.nav-cta{
+  border:1px solid var(--line-2);border-radius:999px;
+  padding:.42rem 1rem !important;color:var(--ink) !important;
+}
+.nav-cta::after{display:none}
+.nav-cta:hover{background:var(--brass);border-color:var(--brass);color:var(--ground) !important}
+
+/* ============================================================ HERO */
+.hero{position:relative;min-height:100svh;display:grid;align-items:center;overflow:hidden}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-veil{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 55%,var(--ground) 97%);
+}
+.hero-inner{position:relative;z-index:2;padding-block:9rem 5rem}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3rem;align-items:end}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+
+.hero h1{
+  font-size:clamp(3.6rem,13vw,9.5rem);font-weight:900;
+  letter-spacing:-.035em;line-height:.86;margin-bottom:1.6rem;
+}
+.hero h1 .b{color:var(--brass);position:relative;display:inline-block}
+.hero-lede{
+  font-size:clamp(1.05rem,2.1vw,1.32rem);color:var(--ink-2);
+  max-width:36ch;margin-bottom:2.4rem;line-height:1.6;
+}
+.hero-lede strong{color:var(--ink);font-weight:500}
+.hero-actions{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+
+.btn{
+  font-family:var(--f-body);font-size:.9rem;font-weight:500;
+  text-decoration:none;padding:.8rem 1.7rem;border-radius:999px;
+  display:inline-flex;align-items:center;gap:.55rem;
+  transition:.25s ease;border:1px solid transparent;cursor:pointer;
+}
+.btn-primary{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.btn-primary:hover{background:var(--brass);border-color:var(--brass);transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--brass);color:var(--brass)}
+.btn svg{width:14px;height:14px}
+
+/* vertical japanese rail */
+.rail{
+  writing-mode:vertical-rl;font-family:var(--f-display);
+  font-size:.95rem;letter-spacing:.45em;color:var(--ink-3);
+  border-inline-start:1px solid var(--line);padding-inline-start:1.3rem;
+  align-self:end;margin-bottom:.5rem;
+}
+@media(max-width:900px){.rail{display:none}}
+
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  z-index:3;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-3);display:grid;gap:.6rem;justify-items:center;
+}
+.scroll-hint span{display:block;width:1px;height:34px;background:linear-gradient(var(--line-2),transparent);animation:drop 2.6s ease-in-out infinite}
+@keyframes drop{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ============================================================ ETHOS STRIP */
+.ethos{
+  border-block:var(--rule);background:var(--paper-2);
+  padding:1.1rem 0;overflow:hidden;
+}
+.ethos-track{display:flex;gap:3.5rem;width:max-content;animation:slide 46s linear infinite}
+.ethos-track > *{
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
+  display:flex;align-items:center;gap:3.5rem;
+}
+.ethos-track i{width:4px;height:4px;background:var(--brass);border-radius:50%;flex:none}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* ============================================================ SECTIONS */
+.sec{padding-block:clamp(4.5rem,10vw,8rem)}
+.sec-head{margin-bottom:3.2rem;max-width:var(--measure)}
+.sec-head h2{font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em;margin:.7rem 0 1rem}
+.sec-head p{color:var(--ink-2);font-size:1.02rem}
+
+/* ---------- craft / services ---------- */
+.craft{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--line);border:var(--rule)}
+.craft-item{background:var(--paper);padding:2.2rem 1.8rem;transition:background .3s}
+.craft-item:hover{background:var(--paper-2)}
+.craft-item .n{
+  font-family:var(--f-mono);font-size:.68rem;color:var(--brass);
+  letter-spacing:.16em;display:block;margin-bottom:1.4rem;
+}
+.craft-item h3{font-size:1.24rem;margin-bottom:.7rem}
+.craft-item p{font-size:.91rem;color:var(--ink-2);line-height:1.62}
+
+/* ---------- disclosure log ---------- */
+.log{border:var(--rule);background:var(--paper);overflow-x:auto}
+.log table{width:100%;border-collapse:collapse;min-width:720px}
+.log thead th{
+  font-family:var(--f-mono);font-size:.65rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;
+  text-align:left;padding:1rem 1.3rem;border-bottom:1px solid var(--line-2);
+  background:var(--paper-2);white-space:nowrap;
+}
+.log tbody tr{border-bottom:var(--rule);transition:background .2s}
+.log tbody tr:last-child{border-bottom:0}
+.log tbody tr:hover{background:var(--paper-2)}
+.log td{padding:1.15rem 1.3rem;vertical-align:top;font-size:.9rem}
+.log .t-sub{color:var(--ink-2);font-size:.83rem;margin-top:.3rem;max-width:46ch;line-height:1.55}
+.log .t-title{font-weight:500;color:var(--ink)}
+.log .mono{font-family:var(--f-mono);font-size:.78rem;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+.log .ref{color:var(--moss);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--moss) 35%,transparent)}
+.log .ref:hover{color:var(--brass);border-color:var(--brass)}
+
+.sev{
+  font-family:var(--f-mono);font-size:.65rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;padding:.28rem .6rem;border-radius:3px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:.4rem;
+}
+.sev::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.sev-crit{color:var(--sev-crit);background:color-mix(in srgb,var(--sev-crit) 12%,transparent)}
+.sev-high{color:var(--sev-high);background:color-mix(in srgb,var(--sev-high) 12%,transparent)}
+.sev-med{color:var(--sev-med);background:color-mix(in srgb,var(--sev-med) 12%,transparent)}
+.sev-low{color:var(--sev-low);background:color-mix(in srgb,var(--sev-low) 12%,transparent)}
+
+.log-note{
+  margin-top:1rem;font-size:.8rem;color:var(--ink-3);
+  display:flex;gap:.6rem;align-items:flex-start;
+}
+.log-note svg{width:14px;height:14px;flex:none;margin-top:.22rem;color:var(--ink-3)}
+
+/* ---------- writing ---------- */
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.6rem}
+.post{
+  background:var(--paper);border:var(--rule);border-radius:2px;
+  padding:1.9rem;display:flex;flex-direction:column;gap:.85rem;
+  text-decoration:none;transition:.3s ease;position:relative;
+}
+.post::before{
+  content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--brass);
+  transform:scaleY(0);transform-origin:top;transition:transform .35s ease;
+}
+.post:hover{transform:translateY(-3px);box-shadow:0 14px 34px -18px rgb(var(--shadow-c)/.4);border-color:var(--line-2)}
+.post:hover::before{transform:scaleY(1)}
+.post-meta{display:flex;gap:.8rem;align-items:center;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.post-meta .tag{color:var(--moss)}
+.post h3{font-size:1.3rem;line-height:1.28}
+.post p{font-size:.9rem;color:var(--ink-2);line-height:1.62;flex:1}
+.post .more{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);display:flex;align-items:center;gap:.4rem}
+.post .more svg{width:12px;height:12px;transition:transform .3s}
+.post:hover .more svg{transform:translateX(4px)}
+
+/* ---------- about ---------- */
+.about{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+@media(max-width:860px){.about{grid-template-columns:1fr}}
+.about-body p{color:var(--ink-2);margin-bottom:1.1rem;max-width:var(--measure)}
+.about-body p:first-of-type{font-size:1.12rem;color:var(--ink);font-family:var(--f-display);line-height:1.55}
+.creds{border:var(--rule);background:var(--paper);padding:1.8rem;display:grid;gap:1.4rem}
+.cred{display:grid;gap:.3rem}
+.cred dt{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+.cred dd{margin:0;font-size:.94rem;color:var(--ink)}
+.cred dd small{display:block;color:var(--ink-3);font-size:.8rem;margin-top:.15rem}
+
+/* ---------- contact ---------- */
+.contact{
+  border:var(--rule);background:var(--paper);padding:clamp(2.2rem,6vw,4rem);
+  display:grid;gap:1.6rem;justify-items:start;position:relative;overflow:hidden;
+}
+.contact::after{
+  content:"";position:absolute;right:-60px;bottom:-60px;width:240px;height:240px;
+  border-radius:50%;background:radial-gradient(circle,var(--brass-soft),transparent 68%);
+  pointer-events:none;
+}
+.contact h2{font-size:clamp(1.9rem,4.4vw,2.9rem);letter-spacing:-.02em;max-width:18ch}
+.contact p{color:var(--ink-2);max-width:52ch}
+.contact-row{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center;position:relative;z-index:1}
+.mailto{font-family:var(--f-mono);font-size:.86rem;color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line-2);padding-bottom:2px}
+.mailto:hover{color:var(--brass);border-color:var(--brass)}
+
+/* ---------- footer ---------- */
+.foot{border-top:var(--rule);margin-top:clamp(4rem,9vw,7rem);padding-block:2.6rem 3.2rem}
+.foot-grid{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;align-items:center}
+.foot-links{display:flex;gap:1.4rem;flex-wrap:wrap}
+.foot-links a{font-size:.83rem;color:var(--ink-2);text-decoration:none}
+.foot-links a:hover{color:var(--brass)}
+.foot-note{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;color:var(--ink-3)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+
+<!-- ══════════════════════════════════ NAV ══════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <a href="#top" class="brand">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z"/></svg>
+    Mythbolt
+  </a>
+  <div class="nav-links">
+    <a href="#craft">Craft</a>
+    <a href="#work">Disclosures</a>
+    <a href="#writing">Field Notes</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="nav-cta">Start a scope</a>
+    <button class="theme-btn" id="themeBtn" aria-label="Switch colour theme" title="Switch theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════ HERO ══════════════════════════════════ -->
+<header class="hero" id="top">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="hero-veil" aria-hidden="true"></div>
+
+  <div class="hero-inner wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow" style="margin-bottom:1.6rem">Offensive Security &middot; Est. Kathmandu</p>
+        <h1>Myth<span class="b">bolt</span></h1>
+        <p class="hero-lede">
+          Guardians sleep under the moss until something reaches for what they protect.
+          We are the ones who <strong>go looking first</strong> &mdash; adversarial testing,
+          vulnerability research, and coordinated disclosure for systems that cannot afford surprises.
+        </p>
+        <div class="hero-actions">
+          <a href="#work" class="btn btn-primary">
+            See the disclosures
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#contact" class="btn btn-ghost">Start a scope</a>
+        </div>
+      </div>
+      <p class="rail" aria-hidden="true">神話の稲妻</p>
+    </div>
+  </div>
+
+  <div class="scroll-hint"><span></span>Descend</div>
+</header>
+
+<!-- ══════════════════════════════════ ETHOS ══════════════════════════════════ -->
+<div class="ethos" aria-hidden="true">
+  <div class="ethos-track">
+    <div>Coordinated disclosure<i></i>Proof over speculation<i></i>Non-destructive testing<i></i>Read the body, not the status<i></i>Untested is not clean<i></i>Every finding reproduced twice<i></i></div>
+    <div>Coordinated disclosure<i></i>Proof over speculation<i></i>Non-destructive testing<i></i>Read the body, not the status<i></i>Untested is not clean<i></i>Every finding reproduced twice<i></i></div>
+  </div>
+</div>
+
+<main>
+<!-- ══════════════════════════════════ CRAFT ══════════════════════════════════ -->
+<section class="sec wrap" id="craft">
+  <div class="sec-head rv">
+    <p class="eyebrow">What we do</p>
+    <h2>Four ways in, one way of working</h2>
+    <p>Every engagement ends the same way: a finding you can reproduce from the report alone, or a documented reason the surface held.</p>
+  </div>
+
+  <div class="craft rv">
+    <article class="craft-item">
+      <span class="n">01</span>
+      <h3>Web &amp; API Testing</h3>
+      <p>Authentication logic, access control, injection, and the seams between them. Full-surface coverage with a written record of what was tested, not just what was found.</p>
+    </article>
+    <article class="craft-item">
+      <span class="n">02</span>
+      <h3>Vulnerability Research</h3>
+      <p>Protocol and parser work on telecom, embedded, and enterprise platforms. Where a patch fixed the proof-of-concept but not the vulnerability class, we find the variant.</p>
+    </article>
+    <article class="craft-item">
+      <span class="n">03</span>
+      <h3>Secure Code Review</h3>
+      <p>Source-level audits with semantic analysis and manual review of the paths that matter — deserialization, entity resolution, authorization ordering, trust boundaries.</p>
+    </article>
+    <article class="craft-item">
+      <span class="n">04</span>
+      <h3>Adversary Simulation</h3>
+      <p>Chained attack paths that reflect how a real intrusion unfolds: a low-severity primitive escalated, step by step, into the outcome that actually costs you something.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ WORK ══════════════════════════════════ -->
+<section class="sec wrap" id="work">
+  <div class="sec-head rv">
+    <p class="eyebrow">Selected disclosures</p>
+    <h2>The archive</h2>
+    <p>Findings reported through coordinated disclosure and bug-bounty programmes. Vendors are named only where the programme permits it.</p>
+  </div>
+
+  <div class="log rv">
+    <table>
+      <thead>
+        <tr><th>Year</th><th>Subject</th><th>Class</th><th>Severity</th><th>Reference</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono">2026</td>
+          <td>
+            <div class="t-title">Cisco BroadWorks</div>
+            <div class="t-sub">Unauthenticated XML external entity injection in the OCI provisioning parser, permitting arbitrary file read from the application host.</div>
+          </td>
+          <td class="mono">XXE &middot; CWE-611</td>
+          <td><span class="sev sev-crit">Critical</span></td>
+          <td class="mono"><a class="ref" href="https://nvd.nist.gov/vuln/detail/CVE-2026-20320" target="_blank" rel="noopener">CVE-2026-20320</a></td>
+        </tr>
+        <tr>
+          <td class="mono">2026</td>
+          <td>
+            <div class="t-title">Apple</div>
+            <div class="t-sub">Authorization flaw in an internal service API allowing record operations across a tenant boundary without the corresponding entitlement.</div>
+          </td>
+          <td class="mono">Broken access control</td>
+          <td><span class="sev sev-high">High</span></td>
+          <td class="mono">Resolved &middot; ASI</td>
+        </tr>
+        <tr>
+          <td class="mono">2026</td>
+          <td>
+            <div class="t-title">Tier-1 US carrier</div>
+            <div class="t-sub">Entity injection in a voice-platform provisioning interface, chained to disclosure of backend service configuration.</div>
+          </td>
+          <td class="mono">XXE &rarr; info disclosure</td>
+          <td><span class="sev sev-crit">Critical</span></td>
+          <td class="mono">Private programme</td>
+        </tr>
+        <tr>
+          <td class="mono">2026</td>
+          <td>
+            <div class="t-title">European telecom operator</div>
+            <div class="t-sub">Absent rate limiting on a voice-portal authentication endpoint, permitting exhaustive recovery of numeric account passcodes.</div>
+          </td>
+          <td class="mono">Auth &middot; CWE-307</td>
+          <td><span class="sev sev-high">High</span></td>
+          <td class="mono">Private programme</td>
+        </tr>
+        <tr>
+          <td class="mono">2026</td>
+          <td>
+            <div class="t-title">Engineering software vendor</div>
+            <div class="t-sub">Access-control and information-disclosure findings across a cloud collaboration platform, reported as a consolidated set.</div>
+          </td>
+          <td class="mono">Access control &middot; disclosure</td>
+          <td><span class="sev sev-med">Medium</span></td>
+          <td class="mono">Bugcrowd</td>
+        </tr>
+        <tr>
+          <td class="mono">2025</td>
+          <td>
+            <div class="t-title">Public blockchain RPC provider</div>
+            <div class="t-sub">Unauthenticated method exposure on a node RPC interface permitting state queries outside the documented public surface.</div>
+          </td>
+          <td class="mono">Exposed interface</td>
+          <td><span class="sev sev-med">Medium</span></td>
+          <td class="mono">Disclosed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="log-note rv">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
+    Entries under active embargo or non-disclosure are listed by class and severity only. Full write-ups follow once the vendor confirms remediation.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════ WRITING ══════════════════════════════════ -->
+<section class="sec wrap" id="writing">
+  <div class="sec-head rv">
+    <p class="eyebrow">Field notes</p>
+    <h2>Writing on method</h2>
+    <p>Notes from live engagements — mostly about how findings get missed, and the discipline that stops it happening twice.</p>
+  </div>
+
+  <div class="posts">
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Parsers</span><span>12 min</span></div>
+      <h3>Parameter entities survive the patch</h3>
+      <p>A vendor fixed the general-entity case and closed the ticket. The parameter-entity path stayed open, and with it every file the service could read. On why patching the proof-of-concept is not patching the bug.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Access control</span><span>9 min</span></div>
+      <h3>The gate that was never there</h3>
+      <p>Bypassing a 401 and finding a route that never had a check are different bugs with different fixes. Most testing conflates them, and the second one is worth more.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Method</span><span>7 min</span></div>
+      <h3>Read the body, not the status code</h3>
+      <p>A 200 can carry an authorization error. A 401 on a path that does not exist tells you the gate is blanket, not route-specific. Status-only sweeps produce confident, wrong maps.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Method</span><span>6 min</span></div>
+      <h3>Invisible is not absent</h3>
+      <p>An interface that does not offer registration is not a server that refuses it. Disabled fields, unlinked flows, and deprecated versions all still answer when you ask them directly.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Tooling</span><span>11 min</span></div>
+      <h3>A tool exiting zero is not a completed scan</h3>
+      <p>Four separate tools failed silently in a single engagement and every one of them returned success. Positive controls, artifact assertions, and why coverage counts belong in the report.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a href="#writing" class="post rv">
+      <div class="post-meta"><span class="tag">Disclosure</span><span>8 min</span></div>
+      <h3>Writing the report the triager wants</h3>
+      <p>Severity comes from the outcome you demonstrated, not the bug class you named. How to strip speculation out of a draft and keep what survives.</p>
+      <span class="more">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ ABOUT ══════════════════════════════════ -->
+<section class="sec wrap" id="about">
+  <div class="about">
+    <div class="about-body rv">
+      <p class="eyebrow">About</p>
+      <h2 style="font-size:clamp(2rem,4.6vw,3.1rem);letter-spacing:-.02em;margin:.7rem 0 1.6rem">
+        A practice, not a scanner subscription
+      </h2>
+      <p>Mythbolt is an independent offensive-security practice working on web applications, APIs, telecom platforms, and blockchain infrastructure.</p>
+      <p>Most security testing stops at the first thing that looks hardened. The interesting findings are usually one layer past that — in the disagreement between two components, in the version nobody deprecated properly, in the endpoint the interface stopped linking to but the server still answers.</p>
+      <p>Work is delivered as reproducible proof. Every report includes the exact requests, the expected and actual responses, the controls that rule out a false positive, and an honest account of what was tested and did not break. A clean result is a real result when it is earned.</p>
+      <p>Active on HackerOne and Bugcrowd, with coordinated disclosures to telecom, consumer-technology, and enterprise-software vendors.</p>
+    </div>
+
+    <dl class="creds rv">
+      <div class="cred">
+        <dt>Focus</dt>
+        <dd>Web &amp; API<small>Auth logic, access control, injection</small></dd>
+      </div>
+      <div class="cred">
+        <dt>Research</dt>
+        <dd>Telecom &amp; protocol<small>BroadWorks, SIP, provisioning interfaces</small></dd>
+      </div>
+      <div class="cred">
+        <dt>Also</dt>
+        <dd>Blockchain &amp; RPC<small>Node interfaces, contract review</small></dd>
+      </div>
+      <div class="cred">
+        <dt>Platforms</dt>
+        <dd>HackerOne &middot; Bugcrowd<small>Public and private programmes</small></dd>
+      </div>
+      <div class="cred">
+        <dt>Credentials</dt>
+        <dd>CVE-assigned researcher<small>OSCP in progress</small></dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ CONTACT ══════════════════════════════════ -->
+<section class="sec wrap" id="contact">
+  <div class="contact rv">
+    <p class="eyebrow">Engagements</p>
+    <h2>Tell us what you are afraid of losing</h2>
+    <p>Scoping starts with the outcome that would actually hurt — the data, the account, the service. We work backwards from there rather than starting with a checklist. Send a short note about the system and the boundary you want tested.</p>
+    <div class="contact-row">
+      <a href="mailto:hello@mythbolt.com" class="btn btn-primary">
+        hello@mythbolt.com
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#work" class="mailto">PGP key on request</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer class="foot wrap">
+  <div class="foot-grid">
+    <div style="display:grid;gap:.5rem">
+      <a href="#top" class="brand" style="font-size:.95rem">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z"/></svg>
+        Mythbolt
+      </a>
+      <p class="foot-note">Offensive security &middot; mythbolt.com</p>
+    </div>
+    <nav class="foot-links">
+      <a href="#craft">Craft</a>
+      <a href="#work">Disclosures</a>
+      <a href="#writing">Field Notes</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <p class="foot-note">&copy; 2026 Mythbolt</p>
+  </div>
+</footer>
+
+<script>
+/* ── theme ─────────────────────────────────────────────── */
+(function(){
+  var root=document.documentElement,btn=document.getElementById('themeBtn');
+  var saved=null;
+  try{saved=localStorage.getItem('mb-theme')}catch(e){}
+  if(saved==='dark'||saved==='light')root.setAttribute('data-theme',saved);
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur)cur=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+    var next=cur==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('mb-theme',next)}catch(e){}
+    drawSky();
+  });
+})();
+
+/* ── nav solidity ──────────────────────────────────────── */
+(function(){
+  var nav=document.getElementById('nav');
+  var set=function(){nav.dataset.solid=String(scrollY>40)};
+  set();addEventListener('scroll',set,{passive:true});
+})();
+
+/* ── reveal ────────────────────────────────────────────── */
+(function(){
+  var els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en,i){
+      if(en.isIntersecting){
+        var d=en.target.parentElement&&en.target.parentElement.classList.contains('posts')?i*60:0;
+        setTimeout(function(){en.target.classList.add('in')},d);
+        io.unobserve(en.target);
+      }
+    });
+  },{rootMargin:'0px 0px -12% 0px',threshold:.05});
+  els.forEach(function(e){io.observe(e)});
+})();
+
+/* ── the sky ───────────────────────────────────────────────
+   Cumulus in the Ghibli manner: big, well-defined, softly lit
+   from above. Three depths drifting at different speeds, with
+   a guardian's island held in the middle distance.
+   ──────────────────────────────────────────────────────── */
+var cv=document.getElementById('sky'),ctx=cv.getContext('2d');
+var W=0,H=0,DPR=1,clouds=[],t=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+
+function seedClouds(){
+  clouds=[];
+  var layers=[
+    {n:5,y:[.08,.34],s:[.55,.95],v:.055,a:.34},
+    {n:4,y:[.26,.52],s:[.95,1.5],v:.10,a:.60},
+    {n:3,y:[.44,.66],s:[1.5,2.3],v:.17,a:.85}
+  ];
+  layers.forEach(function(L,li){
+    for(var i=0;i<L.n;i++){
+      clouds.push({
+        x:Math.random()*1.5-.25,
+        y:L.y[0]+Math.random()*(L.y[1]-L.y[0]),
+        s:L.s[0]+Math.random()*(L.s[1]-L.s[0]),
+        v:L.v*(.75+Math.random()*.5),
+        a:L.a*(.8+Math.random()*.35),
+        d:li,
+        puffs:(function(){
+          var p=[],c=4+Math.floor(Math.random()*3);
+          for(var k=0;k<c;k++){
+            p.push({dx:(k-(c-1)/2)*.52+(Math.random()-.5)*.22,
+                    dy:(Math.random()-.5)*.30,
+                    r:.46+Math.random()*.42});
+          }
+          return p;
+        })()
+      });
+    }
+  });
+  clouds.sort(function(a,b){return a.d-b.d});
+}
+
+function cloud(c){
+  var base=Math.min(W,H)*0.13*c.s;
+  var px=c.x*W, py=c.y*H;
+  var cl=css('--cloud'), sh=css('--cloud-shade');
+
+  ctx.save();
+  ctx.globalAlpha=c.a;
+
+  // shaded underside
+  ctx.fillStyle=sh;
+  c.puffs.forEach(function(p){
+    ctx.beginPath();
+    ctx.arc(px+p.dx*base, py+p.dy*base+base*0.16, p.r*base, 0, 6.2832);
+    ctx.fill();
+  });
+  // lit body
+  ctx.fillStyle=cl;
+  c.puffs.forEach(function(p){
+    ctx.beginPath();
+    ctx.arc(px+p.dx*base, py+p.dy*base, p.r*base, 0, 6.2832);
+    ctx.fill();
+  });
+  // flat-ish base, the Ghibli tell
+  ctx.beginPath();
+  ctx.ellipse(px, py+base*0.30, base*1.28, base*0.30, 0, 0, 6.2832);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/* the guardian on its island — small, quiet, in the middle distance */
+function island(){
+  var cx=W*0.79, cy=H*0.60, u=Math.min(W,H)*0.001;
+  if(W<760){cx=W*0.72;cy=H*0.66;u=Math.min(W,H)*0.00085}
+  var bob=reduce?0:Math.sin(t*0.0006)*u*7;
+  cy+=bob;
+
+  ctx.save();
+  ctx.globalAlpha=.92;
+
+  // rock underside — a wedge, wider at top
+  ctx.fillStyle=css('--island-rock');
+  ctx.beginPath();
+  ctx.moveTo(cx-92*u, cy);
+  ctx.lineTo(cx+96*u, cy);
+  ctx.lineTo(cx+52*u, cy+58*u);
+  ctx.lineTo(cx+14*u, cy+96*u);
+  ctx.lineTo(cx-24*u, cy+54*u);
+  ctx.lineTo(cx-70*u, cy+30*u);
+  ctx.closePath();
+  ctx.fill();
+
+  // green cap
+  ctx.fillStyle=css('--island');
+  ctx.beginPath();
+  ctx.ellipse(cx, cy-3*u, 96*u, 17*u, 0, 0, 6.2832);
+  ctx.fill();
+  ctx.fillStyle=css('--island-2');
+  ctx.beginPath();
+  ctx.ellipse(cx, cy+3*u, 96*u, 12*u, 0, 0, 6.2832);
+  ctx.fill();
+
+  // two trees
+  ctx.fillStyle=css('--island-2');
+  [[-46,-9,13],[38,-7,10]].forEach(function(p){
+    ctx.fillRect(cx+p[0]*u-1.6*u, cy+p[1]*u-16*u, 3.2*u, 16*u);
+    ctx.beginPath();
+    ctx.arc(cx+p[0]*u, cy+p[1]*u-22*u, p[2]*u, 0, 6.2832);
+    ctx.fill();
+  });
+
+  // the guardian — standing, arms at rest, head bowed
+  var gx=cx-2*u, gy=cy-10*u;
+  ctx.fillStyle=css('--island-2');
+  ctx.fillRect(gx-9*u, gy-30*u, 18*u, 22*u);            // torso
+  ctx.fillRect(gx-15*u, gy-28*u, 5*u, 20*u);            // arm L
+  ctx.fillRect(gx+10*u, gy-28*u, 5*u, 20*u);            // arm R
+  ctx.beginPath();                                       // head
+  ctx.arc(gx, gy-36*u, 8*u, 0, 6.2832);
+  ctx.fill();
+  ctx.fillRect(gx-6*u, gy-8*u, 5*u, 8*u);               // leg L
+  ctx.fillRect(gx+1*u, gy-8*u, 5*u, 8*u);               // leg R
+
+  // the eye — the one lit thing on the page besides the accent
+  var pulse=reduce?.85:(.62+Math.sin(t*0.0016)*0.26);
+  ctx.globalAlpha=pulse;
+  ctx.fillStyle=css('--brass-lit');
+  ctx.beginPath();
+  ctx.arc(gx+3.2*u, gy-37*u, 2.3*u, 0, 6.2832);
+  ctx.fill();
+  ctx.globalAlpha=pulse*0.26;
+  ctx.beginPath();
+  ctx.arc(gx+3.2*u, gy-37*u, 7*u, 0, 6.2832);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawSky(){
+  if(!W||!H)return;
+  var g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,css('--sky-top'));
+  g.addColorStop(.54,css('--sky-mid'));
+  g.addColorStop(1,css('--sky-low'));
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+  clouds.forEach(cloud);
+  island();
+}
+
+function resize(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  W=cv.clientWidth;H=cv.clientHeight;
+  cv.width=W*DPR;cv.height=H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  drawSky();
+}
+
+function loop(ts){
+  t=ts||0;
+  clouds.forEach(function(c){
+    c.x+=c.v/W*1.9;
+    if(c.x>1.42)c.x=-.42;
+  });
+  drawSky();
+  requestAnimationFrame(loop);
+}
+
+seedClouds();
+resize();
+addEventListener('resize',resize);
+if(reduce){drawSky()}else{requestAnimationFrame(loop)}
+</script>
+
+</body>
+</html>
