@@ -82,29 +82,150 @@ body::before{
 .tbtn:hover{color:var(--brass);border-color:var(--brass)}
 .tbtn svg{width:13px;height:13px}
 
+/* ── crazy ─────────────────────────────────────────────── */
+.crazy-btn{
+  font-family:var(--f-mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brass-hot);background:rgba(232,179,97,.10);
+  border:1px solid rgba(232,179,97,.45);border-radius:999px;
+  padding:.42rem .8rem;cursor:pointer;transition:.3s;backdrop-filter:blur(6px);
+}
+.crazy-btn:hover{background:var(--brass);color:#1B2A1E;border-color:var(--brass);box-shadow:0 0 22px rgba(232,179,97,.6)}
+
+/* every loose piece flies apart */
+.shard{
+  animation:fly 2.5s cubic-bezier(.36,0,.66,-0.25) both;
+  animation-delay:var(--dly,0s);
+  will-change:transform,opacity;
+}
+@keyframes fly{
+  0%{transform:none;opacity:1;filter:blur(0)}
+  22%{transform:translate(calc(var(--tx)*.06),calc(var(--ty)*.06)) rotate(calc(var(--rot)*.08));opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.28);opacity:0;filter:blur(7px)}
+}
+/* .prop and .lantern carry their own idle animation and are declared later,
+   so they need equal-or-greater specificity to be flung */
+.prop.shard,.lantern.shard{
+  animation:fly 2.5s cubic-bezier(.36,0,.66,-0.25) both;
+  animation-delay:var(--dly,0s);
+}
+body.undone{overflow:hidden}
+body.undone .cue,body.undone .charm-hint{opacity:0!important}
+
+.finale{
+  position:fixed;inset:0;z-index:80;
+  display:grid;place-items:center;align-content:center;gap:.4rem;
+  background:radial-gradient(ellipse at center,rgba(28,20,6,.62) 0%,rgba(6,8,6,.93) 68%);
+  animation:finIn 1.1s ease both;
+}
+@keyframes finIn{from{opacity:0}to{opacity:1}}
+
+.fin-rays{
+  position:absolute;width:150vmax;height:150vmax;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,
+    rgba(255,214,138,.10) 0deg 5deg, transparent 5deg 15deg);
+  animation:spin 26s linear infinite;
+  mask-image:radial-gradient(circle,#000 8%,transparent 62%);
+  -webkit-mask-image:radial-gradient(circle,#000 8%,transparent 62%);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.fin-orbit{position:absolute;width:min(74vmin,470px);aspect-ratio:1;animation:spin 17s linear infinite}
+.fin-orbit i{
+  position:absolute;top:50%;left:50%;width:7px;height:7px;margin:-3.5px;
+  border-radius:50%;background:#FFE7A8;
+  box-shadow:0 0 14px 3px rgba(255,208,138,.85);
+}
+.fin-orbit i:nth-child(1){transform:rotate(0deg)   translateX(min(37vmin,235px))}
+.fin-orbit i:nth-child(2){transform:rotate(60deg)  translateX(min(37vmin,235px))}
+.fin-orbit i:nth-child(3){transform:rotate(120deg) translateX(min(37vmin,235px))}
+.fin-orbit i:nth-child(4){transform:rotate(180deg) translateX(min(37vmin,235px))}
+.fin-orbit i:nth-child(5){transform:rotate(240deg) translateX(min(37vmin,235px))}
+.fin-orbit i:nth-child(6){transform:rotate(300deg) translateX(min(37vmin,235px))}
+
+.medal{
+  position:relative;width:min(44vmin,270px);height:auto;overflow:visible;
+  animation:forge 1.5s cubic-bezier(.22,1.4,.36,1) both, hover 5s ease-in-out 1.5s infinite;
+  filter:drop-shadow(0 0 46px rgba(232,179,97,.55));
+}
+@keyframes forge{
+  0%{opacity:0;transform:scale(.15) rotate(-190deg)}
+  62%{opacity:1;transform:scale(1.1) rotate(8deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes hover{0%,100%{translate:0 0}50%{translate:0 -11px}}
+
+.shine{fill:rgba(255,248,222,.55);mix-blend-mode:screen}
+.shine.s1{animation:sweep 2.9s cubic-bezier(.5,0,.5,1) 1.2s infinite}
+.shine.s2{fill:rgba(255,255,255,.8);animation:sweep 2.9s cubic-bezier(.5,0,.5,1) 1.45s infinite}
+.shine.s3{fill:rgba(255,226,160,.32);animation:sweep 4.6s linear 1s infinite}
+@keyframes sweep{
+  0%{transform:translateX(0) rotate(16deg)}
+  100%{transform:translateX(560px) rotate(16deg)}
+}
+.bolt{fill:#3A2405;opacity:.88}
+.shield-face{animation:breathe2 3.4s ease-in-out infinite}
+@keyframes breathe2{0%,100%{opacity:1}50%{opacity:.93}}
+
+.fin-word{
+  position:relative;margin:1.8rem 0 0;
+  font-family:var(--f-display);font-weight:900;
+  font-size:clamp(1.4rem,4.6vw,2.5rem);letter-spacing:.34em;text-indent:.34em;
+  text-transform:uppercase;
+  background:linear-gradient(100deg,#8A5D18 0%,#E8B361 22%,#FFF6D8 40%,#E8B361 58%,#9C6A1E 80%,#FFEFC0 100%);
+  background-size:280% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:flowword 5s linear infinite, finIn 1s ease .9s both;
+}
+@keyframes flowword{to{background-position:280% 0}}
+
+.restore{
+  position:relative;margin-top:1.9rem;
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink);background:rgba(255,255,255,.05);
+  border:1px solid rgba(232,179,97,.4);border-radius:999px;
+  padding:.68rem 1.5rem;cursor:pointer;transition:.3s;backdrop-filter:blur(8px);
+  animation:finIn 1s ease 1.5s both;
+}
+.restore:hover{border-color:var(--brass-hot);color:var(--brass-hot);background:rgba(232,179,97,.14)}
+
+@media (prefers-reduced-motion:reduce){
+  .shard{animation-duration:.4s}
+  .medal{animation:finIn .3s ease both}
+  .fin-rays,.fin-orbit{animation:none}
+  .shine{display:none}
+}
+
 /* ── charms ────────────────────────────────────────────── */
 .props{position:fixed;inset:0;z-index:30;pointer-events:none}
 .prop{
   position:absolute;pointer-events:auto;
-  width:clamp(34px,4.2vw,50px);aspect-ratio:1;
+  width:clamp(46px,5.6vw,68px);aspect-ratio:1;
   padding:0;border:0;background:none;cursor:pointer;
-  color:var(--brass);
+  color:var(--brass-hot);
   animation:bobbing var(--dur,19s) ease-in-out infinite;
   transition:transform .45s cubic-bezier(.34,1.56,.64,1),color .35s,filter .35s;
-  filter:drop-shadow(0 0 10px rgba(232,179,97,.32));
+  filter:drop-shadow(0 0 14px rgba(232,179,97,.55)) drop-shadow(0 2px 5px rgba(0,0,0,.45));
 }
+/* a faint aura so each charm reads against bright cloud as well as dark canopy */
+.prop::before{
+  content:"";position:absolute;inset:-42%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,rgba(232,179,97,.24),rgba(232,179,97,.07) 46%,transparent 70%);
+  transition:opacity .35s,transform .45s;
+}
+.prop:hover::before,.prop:focus-visible::before{transform:scale(1.25);opacity:1}
 @keyframes bobbing{
   0%,100%{transform:translate(0,0) rotate(-4deg)}
   50%{transform:translate(var(--dx,14px),var(--dy,20px)) rotate(4deg)}
 }
 .prop svg{width:100%;height:100%;display:block;overflow:visible}
-.prop .pod{fill:rgba(18,30,26,.82);stroke:var(--brass);stroke-width:1.4}
+.prop .pod{fill:rgba(16,28,24,.88);stroke:var(--brass-hot);stroke-width:2}
 .prop .glyph{fill:var(--brass-hot)}
 .prop .glyph-f{fill:currentColor}
-.prop .fil path,.prop .stem{stroke:currentColor;stroke-width:1.7;stroke-linecap:round;fill:none}
+.prop .fil path,.prop .stem{stroke:currentColor;stroke-width:2.4;stroke-linecap:round;fill:none}
 .prop:hover,.prop:focus-visible{
-  color:var(--brass-hot);
-  filter:drop-shadow(0 0 20px rgba(232,179,97,.85));
+  color:#FFE7B8;
+  transform:scale(1.14);
+  filter:drop-shadow(0 0 26px rgba(255,214,130,.95)) drop-shadow(0 2px 6px rgba(0,0,0,.5));
 }
 .prop:hover{animation-play-state:paused}
 .prop::after{
@@ -495,8 +616,63 @@ body::before{
     <button class="tbtn" id="tbtn" aria-label="Switch between day and night" title="Day / night">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
     </button>
+    <button class="crazy-btn" id="crazyBtn" title="Undo the world">Crazy</button>
   </div>
 </nav>
+
+<!-- ══════════════ THE FINALE — everything becomes one thing ══════════════ -->
+<div class="finale" id="finale" hidden>
+  <div class="fin-rays" aria-hidden="true"></div>
+  <div class="fin-orbit" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <svg class="medal" viewBox="0 0 200 240" role="img" aria-label="The Mythbolt shield">
+    <defs>
+      <linearGradient id="mbGold" x1="0" y1="0" x2=".55" y2="1">
+        <stop offset="0"   stop-color="#6B4110"/>
+        <stop offset=".22" stop-color="#C9954A"/>
+        <stop offset=".42" stop-color="#FFF2C6"/>
+        <stop offset=".58" stop-color="#E3AC58"/>
+        <stop offset=".78" stop-color="#A0701F"/>
+        <stop offset="1"   stop-color="#5E390C"/>
+      </linearGradient>
+      <linearGradient id="mbRim" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FFF0BE"/><stop offset=".5" stop-color="#C08A3E"/>
+        <stop offset="1" stop-color="#FFE7A8"/>
+      </linearGradient>
+      <clipPath id="mbClip">
+        <path d="M100 14 L180 46 L180 122 C180 178 146 212 100 230 C54 212 20 178 20 122 L20 46 Z"/>
+      </clipPath>
+      <filter id="mbGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="7" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <g class="medal-g" filter="url(#mbGlow)">
+      <path class="shield-face"
+            d="M100 14 L180 46 L180 122 C180 178 146 212 100 230 C54 212 20 178 20 122 L20 46 Z"
+            fill="url(#mbGold)" stroke="url(#mbRim)" stroke-width="3.5"/>
+
+      <!-- molten gold running across the face -->
+      <g clip-path="url(#mbClip)">
+        <rect class="shine s1" x="-150" y="-60" width="70" height="380"/>
+        <rect class="shine s2" x="-260" y="-60" width="34" height="380"/>
+        <rect class="shine s3" x="-380" y="-60" width="110" height="380"/>
+      </g>
+
+      <path class="shield-inner"
+            d="M100 30 L166 56 L166 120 C166 168 138 197 100 213 C62 197 34 168 34 120 L34 56 Z"
+            fill="none" stroke="rgba(255,240,196,.42)" stroke-width="1.6"/>
+
+      <g transform="translate(61.6 81.6) scale(3.2)">
+        <path class="bolt" d="M13.5 2 4 13.2h6.2L9.4 22 20 10.4h-6.6L13.5 2Z"/>
+      </g>
+    </g>
+  </svg>
+
+  <p class="fin-word">Mythbolt</p>
+  <button type="button" class="restore" id="restoreBtn">Rebuild the world</button>
+</div>
 
 <main class="scenes">
 
@@ -967,6 +1143,47 @@ function cast(kind){
   seedFx(kind);
 }
 window.__mbCast=cast;
+
+/* the world coming apart: everything spirals into one point */
+var undone=0, undoneT0=0, vortex=[];
+window.__mbUndo=function(on){
+  undone=on?1:0; undoneT0=performance.now();
+  if(on){
+    vortex=[];
+    for(var i=0;i<150;i++){
+      vortex.push({a:Math.random()*6.2832,
+                   r:rnd(.18,.95),
+                   sp:rnd(.4,1.5),
+                   sz:rnd(.9,3.1),
+                   ph:Math.random()*6.28});
+    }
+  }else vortex=[];
+};
+function drawVortex(){
+  var el=(performance.now()-undoneT0)/1000;
+  var pull=Math.min(1,el/2.6);
+  var cx=W/2, cy=H/2, R=Math.min(W,H);
+  ctx.save();
+  vortex.forEach(function(v){
+    if(!reduce){ v.a+=0.004*v.sp; v.r-=0.0016*v.sp*(0.4+pull); if(v.r<0.02){v.r=rnd(.7,1.05)} }
+    var rr=v.r*R*.62;
+    var x=cx+Math.cos(v.a)*rr, y=cy+Math.sin(v.a)*rr*.78;
+    var al=Math.min(1,(1-v.r)*1.5)*(0.35+pull*0.65);
+    ctx.globalAlpha=Math.max(0,al);
+    ctx.fillStyle='#FFD98E';
+    ctx.beginPath(); ctx.arc(x,y,v.sz,0,6.2832); ctx.fill();
+    ctx.globalAlpha=Math.max(0,al*.22);
+    ctx.beginPath(); ctx.arc(x,y,v.sz*4.5,0,6.2832); ctx.fill();
+  });
+  // the core forming
+  ctx.globalAlpha=pull*.9;
+  var core=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.30*pull+2);
+  core.addColorStop(0,'rgba(255,246,214,'+(.85*pull)+')');
+  core.addColorStop(.35,'rgba(232,179,97,'+(.35*pull)+')');
+  core.addColorStop(1,'rgba(232,179,97,0)');
+  ctx.fillStyle=core; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
 window.__mbFxDur=function(k){return (FX[k]||{}).dur||6000};
 
 /* ease in fast, hold, ease out slow */
@@ -1113,6 +1330,13 @@ function frame(ts){
     pal=[[0,1,2].map(function(k2){return lerp(pal[0][k2],d.tint[0][k2],a)}),
          [0,1,2].map(function(k2){return lerp(pal[1][k2],d.tint[1][k2],a)})];
   }
+  // the undoing drains the world toward black
+  var uA=0;
+  if(undone){
+    uA=Math.min(1,(performance.now()-undoneT0)/2200);
+    pal=[[0,1,2].map(function(k2){return lerp(pal[0][k2],[10,8,5][k2],uA*.94)}),
+         [0,1,2].map(function(k2){return lerp(pal[1][k2],[4,4,3][k2],uA*.94)})];
+  }
   var g=ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,rgb(pal[0])); g.addColorStop(1,rgb(pal[1]));
   ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
@@ -1176,6 +1400,8 @@ function frame(ts){
 
   // weather sits over the world
   if(fxE>0) drawFx(fxE);
+  // and the undoing sits over everything
+  if(undone) drawVortex();
 
   requestAnimationFrame(frame);
 }
@@ -1210,6 +1436,72 @@ document.querySelectorAll('.scene').forEach(function(s){io.observe(s)});
 seed(); resize(); onScroll();
 if(P===0) Ptarget=0, P=0;
 requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   CRAZY — the world comes apart and reassembles as one shield
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+"use strict";
+var btn=document.getElementById('crazyBtn'),
+    fin=document.getElementById('finale'),
+    restore=document.getElementById('restoreBtn');
+if(!btn||!fin) return;
+
+var SHARDS='.wordmark,.jp,.say,.tag,.craft span,.lantern,.note,.ask,.ask-note,'+
+           '.reading,.ways .way,.brand,.nav-right a,.tbtn,.crazy-btn,.prop,.foot p,'+
+           '.constel,.augury-txt';
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var shards=[], live=false, scrollWas=0;
+
+function undo(){
+  if(live) return; live=true;
+  scrollWas=window.scrollY;
+  btn.setAttribute('aria-expanded','true');
+
+  shards=[].slice.call(document.querySelectorAll(SHARDS));
+  var cx=innerWidth/2, cy=innerHeight/2;
+  shards.forEach(function(el){
+    var r=el.getBoundingClientRect();
+    var ex=(r.left+r.width/2)-cx, ey=(r.top+r.height/2)-cy;
+    var d=Math.hypot(ex,ey)||1;
+    // fling outward along its own bearing, then it shrinks away
+    var reach=520+Math.random()*460;
+    el.style.setProperty('--tx',(ex/d*reach).toFixed(0)+'px');
+    el.style.setProperty('--ty',(ey/d*reach*.75-90).toFixed(0)+'px');
+    el.style.setProperty('--rot',((Math.random()-.5)*150).toFixed(0)+'deg');
+    el.style.setProperty('--dly',(Math.random()*.75).toFixed(2)+'s');
+    el.classList.add('shard');
+  });
+
+  document.body.classList.add('undone');
+  if(window.__mbUndo) window.__mbUndo(true);
+
+  setTimeout(function(){
+    fin.hidden=false;
+    restore.focus({preventScroll:true});
+  }, reduce?260:2350);
+}
+
+function rebuild(){
+  if(!live) return;
+  fin.hidden=true;
+  shards.forEach(function(el){
+    el.classList.remove('shard');
+    ['--tx','--ty','--rot','--dly'].forEach(function(p){el.style.removeProperty(p)});
+  });
+  shards=[];
+  document.body.classList.remove('undone');
+  if(window.__mbUndo) window.__mbUndo(false);
+  btn.setAttribute('aria-expanded','false');
+  window.scrollTo(0,scrollWas);
+  live=false;
+  btn.focus({preventScroll:true});
+}
+
+btn.addEventListener('click',undo);
+restore.addEventListener('click',rebuild);
+addEventListener('keydown',function(e){ if(e.key==='Escape'&&live) rebuild(); });
 })();
 
 /* ═══════════════════════════════════════════════════════════
