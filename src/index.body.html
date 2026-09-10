@@ -89,6 +89,7 @@ body::before{
 .scene{
   min-height:100svh;display:grid;place-items:center;
   padding:6rem var(--pad);position:relative;
+  scroll-margin-top:5rem; /* clears the fixed nav on anchor jumps */
 }
 .scene-in{
   position:relative;isolation:isolate;
@@ -225,6 +226,105 @@ body::before{
 }
 .note:hover{color:var(--brass-hot);letter-spacing:.012em}
 
+/* ── the oracle ────────────────────────────────────────── */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.ask{
+  display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;
+  margin-top:2.6rem;
+}
+.ask input{
+  font-family:var(--f-mono);font-size:.82rem;color:var(--ink);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  border-radius:999px;padding:.85rem 1.4rem;width:min(23rem,80vw);
+  backdrop-filter:blur(8px);transition:.3s;
+}
+.ask input::placeholder{color:rgba(185,196,180,.62)}
+.ask input:focus{outline:none;border-color:var(--brass);background:rgba(232,179,97,.09)}
+.ask button{
+  font-family:var(--f-mono);font-size:.76rem;letter-spacing:.12em;
+  color:#1B2A1E;background:var(--brass);border:1px solid var(--brass);
+  border-radius:999px;padding:.85rem 1.6rem;cursor:pointer;transition:.3s;
+}
+.ask button:hover{background:var(--brass-hot);border-color:var(--brass-hot);transform:translateY(-2px)}
+.ask-note{
+  font-family:var(--f-mono);font-size:.6rem;letter-spacing:.1em;
+  color:rgba(185,196,180,.6);margin:1rem 0 0;
+}
+.ask.busy input,.ask.busy button{opacity:.4;pointer-events:none}
+
+/* divination */
+.augury{margin-top:2.6rem;display:grid;justify-items:center;gap:.9rem}
+.constel{width:min(220px,62vw);height:auto;overflow:visible}
+.constel circle{fill:var(--brass-hot);opacity:0;transform-box:fill-box;transform-origin:center}
+.augury.go circle{animation:spark .5s ease-out forwards}
+.augury.go circle:nth-child(1){animation-delay:.05s}
+.augury.go circle:nth-child(2){animation-delay:.32s}
+.augury.go circle:nth-child(3){animation-delay:.60s}
+.augury.go circle:nth-child(4){animation-delay:.86s}
+.augury.go circle:nth-child(5){animation-delay:1.12s}
+@keyframes spark{
+  0%{opacity:0;transform:scale(.2)}
+  55%{opacity:1;transform:scale(1.75)}
+  100%{opacity:.95;transform:scale(1);filter:drop-shadow(0 0 7px var(--brass))}
+}
+#cLine{stroke-dasharray:260;stroke-dashoffset:260}
+.augury.go #cLine{animation:trace 1.5s .18s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.augury-txt{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-dim);margin:0;
+}
+.augury.go .augury-txt{animation:breathe 1.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
+
+/* the reading */
+.reading{
+  margin-top:2.4rem;text-align:left;
+  width:min(34rem,86vw);margin-inline:auto;
+  background:rgba(10,20,16,.72);border:1px solid var(--line);
+  border-radius:4px;padding:clamp(1.4rem,4vw,2.2rem);
+  backdrop-filter:blur(16px);
+  box-shadow:0 24px 70px -30px rgba(0,0,0,.9),0 0 60px -20px rgba(232,179,97,.22);
+  animation:rise .8s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.r-sign{
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--brass);margin:0 0 .4rem;
+}
+.r-name{font-size:1.5rem;font-weight:600;margin:0 0 1.1rem;line-height:1.2}
+.r-body{
+  font-size:1.02rem;line-height:1.72;color:var(--ink);margin:0 0 1.4rem;
+}
+.r-omens{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;
+  margin:0 0 1.4rem;padding:1.1rem 0;
+  border-block:1px solid var(--line);
+}
+.r-omens div{display:grid;gap:.25rem}
+.r-omens dt{
+  font-family:var(--f-mono);font-size:.55rem;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(185,196,180,.7);
+}
+.r-omens dd{
+  margin:0;font-family:var(--f-mono);font-size:.9rem;color:var(--brass-hot);
+  font-variant-numeric:tabular-nums;
+}
+.r-tell{
+  font-family:var(--f-mono);font-size:.64rem;line-height:1.8;
+  color:rgba(185,196,180,.78);margin:0 0 1.3rem;
+}
+.r-tell b{color:var(--brass);font-weight:500}
+.r-tell a{color:var(--moss)}
+.again{
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;
+  color:var(--ink);background:none;border:1px solid var(--line);
+  border-radius:999px;padding:.6rem 1.2rem;cursor:pointer;transition:.3s;
+}
+.again:hover{border-color:var(--brass);color:var(--brass-hot)}
+@media(max-width:460px){.r-omens{grid-template-columns:1fr;gap:.7rem}}
+
 /* ── close ─────────────────────────────────────────────── */
 .ways{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin-top:2.6rem}
 .way{
@@ -357,7 +457,56 @@ body::before{
     </div>
   </section>
 
-  <!-- 6 · dawn -->
+  <!-- 6 · the oracle -->
+  <section class="scene" id="oracle">
+    <div class="scene-in">
+      <p class="tag">神託 &middot; The Oracle</p>
+      <p class="say" style="font-size:clamp(1.4rem,4vw,2.5rem)">Today&rsquo;s reading,<br>on the house.</p>
+
+      <form class="ask" id="askForm" autocomplete="off">
+        <label class="sr" for="who">Your LinkedIn name or profile URL</label>
+        <input id="who" name="who" type="text" required
+               placeholder="your LinkedIn name or profile URL"
+               spellcheck="false" autocapitalize="off">
+        <button type="submit">Read the stars</button>
+      </form>
+      <p class="ask-note">Runs entirely in your browser. Nothing is sent anywhere, and nothing is stored.</p>
+
+      <!-- the divination -->
+      <div class="augury" id="augury" hidden aria-hidden="true">
+        <svg viewBox="0 0 220 150" class="constel" id="constel" aria-hidden="true">
+          <path id="cLine" d="M28 112 L64 58 L104 86 L142 34 L188 70" fill="none"
+                stroke="var(--brass)" stroke-width="1" stroke-linecap="round" opacity=".55"/>
+          <g id="cStars">
+            <circle cx="28"  cy="112" r="3"/><circle cx="64"  cy="58"  r="4.4"/>
+            <circle cx="104" cy="86"  r="2.6"/><circle cx="142" cy="34"  r="4"/>
+            <circle cx="188" cy="70"  r="3.2"/>
+          </g>
+        </svg>
+        <p class="augury-txt" id="auguryTxt">Consulting the guardian&hellip;</p>
+      </div>
+
+      <!-- the reading -->
+      <article class="reading" id="reading" hidden aria-live="polite">
+        <header>
+          <p class="r-sign" id="rSign"></p>
+          <h3 class="r-name" id="rName"></h3>
+        </header>
+        <p class="r-body" id="rBody"></p>
+        <dl class="r-omens" id="rOmens"></dl>
+        <p class="r-tell">
+          One more thing, since this is a security practice:
+          that reading is drawn from a pool of <b id="rPool">0</b> and fits almost anyone
+          who reads it &mdash; the <a href="https://en.wikipedia.org/wiki/Barnum_effect" target="_blank" rel="noopener">Forer effect</a>.
+          You were also happy to hand a stranger your professional identity for it.
+          Yours went nowhere. That is usually the only difference.
+        </p>
+        <button type="button" class="again" id="again">Read another</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- 7 · dawn -->
   <section class="scene" id="close">
     <div class="scene-in">
       <p class="say">Tell us what you<br>can&rsquo;t afford to lose.</p>
@@ -771,5 +920,228 @@ document.querySelectorAll('.scene').forEach(function(s){io.observe(s)});
 seed(); resize(); onScroll();
 if(P===0) Ptarget=0, P=0;
 requestAnimationFrame(frame);
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   THE ORACLE
+   A genuine Forer-effect reading, composed from 84 fragments
+   and seeded by name + date. Entirely client-side: the name
+   is never transmitted, never stored, never leaves this scope.
+   ═══════════════════════════════════════════════════════════ */
+(function(){
+"use strict";
+
+var OPEN=[
+ "You read a room faster than you let on, and you have learned to keep most of it to yourself.",
+ "There is a version of you that few people meet, and it is the one that does your best thinking.",
+ "You hold yourself to a standard you would never think of imposing on anyone else.",
+ "You have a talent for finishing what other people started, and for not mentioning it afterwards.",
+ "Independence matters to you more than most people realise, which is why advice tends to land strangely.",
+ "You have been underestimated at least once by someone who really should have known better.",
+ "You are more persuadable by a good argument than by a loud one, which makes you rarer than you think.",
+ "Some part of you is still deciding between the safe road and the interesting one.",
+ "You notice the detail everyone else walks past, and it has cost you sleep more than once.",
+ "You are kinder in private than your professional face lets on.",
+ "You would rather be told the truth late than be managed early.",
+ "You have outgrown a role that you are still, technically, performing.",
+ "You are carrying a question you have not asked out loud, and you already suspect the answer.",
+ "You are better in a crisis than in a queue.",
+ "There is something you are good at that you have stopped counting as a skill.",
+ "You trust patterns more than promises, and you have been right to.",
+ "You give people more chances than you admit to, and fewer than they think.",
+ "You have quietly changed your mind about something important in the last year.",
+ "You do your best work just past the point where you were supposed to stop.",
+ "Praise makes you slightly suspicious. You check the workings anyway.",
+ "You keep one rule strictly and would struggle to explain it to a stranger.",
+ "You are the person others tell things to, and you rarely get the same in return.",
+ "You will take an interesting problem over a comfortable one, and it shows.",
+ "You measure yourself against where you meant to be, not against where you started."
+];
+
+var TURN=[
+ "Today rewards the small thing you have been postponing.",
+ "Something you had filed as settled is going to ask you one more question today.",
+ "An ordinary conversation today carries more weight than its length suggests.",
+ "Today favours the second attempt over the first idea.",
+ "A door you assumed was closed turns out to be merely unlatched.",
+ "Today goes better if you say the thing plainly the first time.",
+ "Someone hands you a half-formed idea today. The good part of it is real.",
+ "This is a day for finishing rather than starting.",
+ "A delay today is working in your favour, though not yet visibly.",
+ "Today puts you near someone who is further along the same road.",
+ "The useful part of today happens just after the part you were dreading.",
+ "Today is a good day to ask for the number rather than estimate it.",
+ "Something small breaks in your favour today, and you may miss it entirely.",
+ "Today asks for patience in one place and speed in another. They are not the same place.",
+ "An old piece of work comes back useful today.",
+ "Today rewards curiosity considerably more than certainty.",
+ "You will be given an opening today that does not announce itself.",
+ "Today is better spent narrowing than expanding.",
+ "A decision you have been circling gets simpler today. Not easier, simpler.",
+ "Today brings a correction that will feel like a setback for roughly an hour.",
+ "The right move today is the one you would advise a friend to make.",
+ "Today favours writing it down over holding it in your head.",
+ "Someone is going to be more receptive today than they were last week.",
+ "Today, the boring option is quietly the strong one."
+];
+
+var CARE=[
+ "Be careful of agreeing to something today only because the pause got long.",
+ "One message today deserves a second read before you answer it.",
+ "Guard your afternoon. It is more spoken-for than you think.",
+ "Do not mistake momentum for direction this week.",
+ "Someone's confidence today is not the same thing as their evidence.",
+ "Take care not to solve a problem nobody actually asked you to solve.",
+ "Do not let one small irritation set the tone for an otherwise good day.",
+ "Be wary of a shortcut that only saves time for you.",
+ "Check the thing you are most sure about. That is the one carrying the risk.",
+ "Do not commit to the calendar what you have not committed to in your head.",
+ "Resist explaining yourself to someone who has already decided.",
+ "One yes today should probably have been a not yet.",
+ "Be careful of finishing someone's sentence before you have heard it.",
+ "Do not confuse being needed with being useful today.",
+ "The tempting option today is quick and very slightly wrong.",
+ "Take the extra look before you send it. You will be glad twice.",
+ "Do not read tiredness as a verdict on the work.",
+ "Someone may ask you for certainty you do not owe them yet.",
+ "Be careful with a promise made in a good mood.",
+ "The detail you are skipping is the one you will be asked about."
+];
+
+var CLOSE=[
+ "The week bends your way after that.",
+ "You are closer than the current evidence suggests.",
+ "Hold the line. It is nearly the right shape.",
+ "What you build this week outlasts the reason you started it.",
+ "The effort is registering, including where nobody has said so.",
+ "You will look back on this stretch more kindly than you are living it.",
+ "The next good thing arrives sideways.",
+ "Keep going. The compound interest is real.",
+ "You have more room to manoeuvre than you are currently using.",
+ "The answer is already inside something you wrote down.",
+ "Trust the version of you that made the plan.",
+ "It resolves. Not today, but sooner than the worry says.",
+ "You are allowed to be pleased with this one.",
+ "The quiet work counts double this month.",
+ "Someone is going to be glad you did it properly.",
+ "You will not have to explain this later. It will show."
+];
+
+var SIGNS=["The Lantern","The Watcher","The Ford","The Kite","The Ash","The Cistern",
+           "The Heron","The Anvil","The Thread","The Beacon","The Hollow","The Compass"];
+var PORTS=[22,80,443,1337,2222,3000,4443,5432,6379,8080,8443,9000];
+var CODES=["200 OK","201 Created","202 Accepted","204 No Content","207 Multi-Status",
+           "301 Moved","304 Not Modified","418 Teapot"];
+var HOURS=["06:40","07:15","09:20","10:05","11:30","13:45",
+           "14:10","15:55","16:30","18:20","21:05","23:11"];
+
+var POOL = OPEN.length*TURN.length*CARE.length*CLOSE.length;
+
+/* FNV-1a, then an LCG so each field draws independently */
+function seedOf(str){
+  var h=0x811c9dc5;
+  for(var i=0;i<str.length;i++){
+    h^=str.charCodeAt(i);
+    h=(h+((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24)))>>>0;
+  }
+  return h>>>0;
+}
+function rolling(seed){
+  var s=seed>>>0;
+  return function(n){
+    s=(Math.imul(s,1664525)+1013904223)>>>0;
+    return s%n;
+  };
+}
+
+/* accepts "Ada Lovelace", "linkedin.com/in/ada-lovelace", or the bare slug */
+function readName(raw){
+  var v=String(raw).trim();
+  var m=v.match(/linkedin\.com\/in\/([^\/?#\s]+)/i);
+  if(m) v=m[1];
+  else if(/^\/?in\//i.test(v)) v=v.replace(/^\/?in\//i,'').split(/[\/?#]/)[0];
+  try{ v=decodeURIComponent(v); }catch(e){}
+  v=v.replace(/[-_+]+/g,' ')
+     .replace(/\s*\b[0-9a-f]{6,}\b\s*$/i,'')   // linkedin's trailing hash
+     .replace(/\s*\b\d{1,4}\b\s*$/,'')
+     .replace(/\s+/g,' ').trim();
+  if(!v) return 'Traveller';
+  v=v.replace(/\b[\p{L}]/gu,function(c){return c.toUpperCase()});
+  return v.length>44 ? v.slice(0,44).trim() : v;
+}
+
+var form=document.getElementById('askForm'),
+    who=document.getElementById('who'),
+    aug=document.getElementById('augury'),
+    augTxt=document.getElementById('auguryTxt'),
+    out=document.getElementById('reading'),
+    again=document.getElementById('again');
+
+var STAGES=["Consulting the guardian…","Reading the alignment…","Drawing your thread…"];
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var timers=[];
+function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+
+function render(name){
+  var today=new Date().toISOString().slice(0,10);
+  var pick=rolling(seedOf(name.toLowerCase()+'|'+today));
+
+  var body=[OPEN[pick(OPEN.length)],TURN[pick(TURN.length)],
+            CARE[pick(CARE.length)],CLOSE[pick(CLOSE.length)]].join(' ');
+
+  // textContent throughout — never innerHTML with user input
+  document.getElementById('rSign').textContent =
+    SIGNS[pick(SIGNS.length)] + ' · ' +
+    new Date().toLocaleDateString(undefined,{day:'numeric',month:'long'});
+  document.getElementById('rName').textContent = name;
+  document.getElementById('rBody').textContent = body;
+  document.getElementById('rPool').textContent = POOL.toLocaleString();
+
+  var omens=[['Fortunate port',PORTS[pick(PORTS.length)]],
+             ['Auspicious status',CODES[pick(CODES.length)]],
+             ['Favourable hour',HOURS[pick(HOURS.length)]]];
+  var dl=document.getElementById('rOmens');
+  dl.textContent='';
+  omens.forEach(function(o){
+    var d=document.createElement('div'),
+        dt=document.createElement('dt'),
+        dd=document.createElement('dd');
+    dt.textContent=o[0]; dd.textContent=o[1];
+    d.appendChild(dt); d.appendChild(dd); dl.appendChild(d);
+  });
+}
+
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  var name=readName(who.value);
+  clearTimers();
+
+  out.hidden=true;
+  aug.hidden=false; aug.setAttribute('aria-hidden','false');
+  form.classList.add('busy');
+  // restart the constellation animation
+  aug.classList.remove('go'); void aug.offsetWidth; aug.classList.add('go');
+
+  var step=reduce?0:1;
+  augTxt.textContent=STAGES[0];
+  if(!reduce){
+    timers.push(setTimeout(function(){augTxt.textContent=STAGES[1]},900));
+    timers.push(setTimeout(function(){augTxt.textContent=STAGES[2]},1800));
+  }
+  timers.push(setTimeout(function(){
+    render(name);
+    aug.hidden=true; aug.setAttribute('aria-hidden','true');
+    aug.classList.remove('go');
+    form.classList.remove('busy');
+    out.hidden=false;
+    out.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'});
+  }, reduce?60:2650));
+});
+
+again.addEventListener('click',function(){
+  clearTimers();
+  out.hidden=true;
+  who.value=''; who.focus();
+});
 })();
 </script>
