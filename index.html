@@ -110,24 +110,39 @@ body::before{
 }
 .crazy-btn:hover{background:var(--brass);color:#1B2A1E;border-color:var(--brass);box-shadow:0 0 22px rgba(232,179,97,.6)}
 
-/* every loose piece flies apart */
-.shard{
-  animation:fly 2.5s cubic-bezier(.36,0,.66,-0.25) both;
+/* every loose piece is thrown out, then hauled back into the core */
+.shard,.ch{
+  animation:fly 4.4s cubic-bezier(.30,.02,.28,1) both;
   animation-delay:var(--dly,0s);
   will-change:transform,opacity;
 }
+.ch{display:inline-block;white-space:pre}
 @keyframes fly{
-  0%{transform:none;opacity:1;filter:blur(0)}
-  22%{transform:translate(calc(var(--tx)*.06),calc(var(--ty)*.06)) rotate(calc(var(--rot)*.08));opacity:1}
-  100%{transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.28);opacity:0;filter:blur(7px)}
+  0%  {transform:none;opacity:1;filter:blur(0)}
+  6%  {transform:translate(calc(var(--tx)*.09),calc(var(--ty)*.09)) rotate(calc(var(--rot)*.09)) scale(1.06)}
+  34% {transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.94);opacity:1;filter:blur(1.5px)}
+  46% {transform:translate(calc(var(--tx)*.96),calc(var(--ty)*.96)) rotate(var(--rot)) scale(.9);opacity:1}
+  100%{transform:translate(var(--cx),var(--cy)) rotate(calc(var(--rot)*2.6)) scale(.02);opacity:0;filter:blur(4px)}
 }
 /* .prop and .lantern carry their own idle animation and are declared later,
    so they need equal-or-greater specificity to be flung */
 .prop.shard,.lantern.shard{
-  animation:fly 2.5s cubic-bezier(.36,0,.66,-0.25) both;
+  animation:fly 4.4s cubic-bezier(.30,.02,.28,1) both;
   animation-delay:var(--dly,0s);
 }
-body.undone{overflow:hidden}
+/* the DOM lurches with the canvas */
+.scenes.quake{animation:quake .9s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes quake{
+  0%,100%{transform:translate(0,0)}
+  6%{transform:translate(-16px,9px)}  12%{transform:translate(14px,-11px)}
+  22%{transform:translate(-11px,-7px)} 30%{transform:translate(9px,12px)}
+  40%{transform:translate(-13px,5px)}  52%{transform:translate(11px,-8px)}
+  66%{transform:translate(-7px,6px)}   80%{transform:translate(5px,-4px)}
+}
+/* debris flies past the viewport edges — clip at BOTH the root and the body,
+   or a phone gets a horizontal scrollbar mid-shatter */
+html.undone,body.undone{overflow:hidden}
+html.undone .props,html.undone .nav{overflow:clip}
 body.undone .cue,body.undone .charm-hint{opacity:0!important}
 
 .finale{
@@ -163,7 +178,7 @@ body.undone .cue,body.undone .charm-hint{opacity:0!important}
 
 .medal{
   position:relative;width:min(44vmin,270px);height:auto;overflow:visible;
-  animation:forge 1.5s cubic-bezier(.22,1.4,.36,1) both, hover 5s ease-in-out 1.5s infinite;
+  animation:forge 1.5s cubic-bezier(.22,1.4,.36,1) both;
   filter:drop-shadow(0 0 46px rgba(232,179,97,.55));
 }
 @keyframes forge{
@@ -184,6 +199,35 @@ body.undone .cue,body.undone .charm-hint{opacity:0!important}
 .bolt{fill:#3A2405;opacity:.88}
 .shield-face{animation:breathe2 3.4s ease-in-out infinite}
 @keyframes breathe2{0%,100%{opacity:1}50%{opacity:.93}}
+
+/* the shield and its ring of powers share one origin */
+.medal-wrap{
+  position:relative;display:grid;place-items:center;
+  animation:hover 5s ease-in-out 1.5s infinite;
+}
+
+/* each power slams into the ring and stays lit */
+.runes{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.runes i{
+  --orb:min(31vmin,208px);
+  position:absolute;top:50%;left:50%;width:17px;height:17px;margin:-8.5px;
+  border-radius:50%;background:var(--rc);
+  box-shadow:0 0 20px 6px color-mix(in srgb,var(--rc) 78%,transparent),
+             0 0 46px 16px color-mix(in srgb,var(--rc) 26%,transparent);
+  transform:rotate(var(--ra)) translateX(var(--orb));
+  animation:slam .75s cubic-bezier(.2,1.7,.5,1) both;
+}
+.runes i:nth-child(1){animation-delay:.55s}
+.runes i:nth-child(2){animation-delay:.72s}
+.runes i:nth-child(3){animation-delay:.89s}
+.runes i:nth-child(4){animation-delay:1.06s}
+.runes i:nth-child(5){animation-delay:1.23s}
+.runes i:nth-child(6){animation-delay:1.40s}
+@keyframes slam{
+  0%  {opacity:0;transform:rotate(var(--ra)) translateX(calc(var(--orb) * 3.1)) scale(2.8)}
+  70% {opacity:1;transform:rotate(var(--ra)) translateX(calc(var(--orb) * .86)) scale(1.6)}
+  100%{opacity:1;transform:rotate(var(--ra)) translateX(var(--orb)) scale(1)}
+}
 
 .fin-word{
   position:relative;margin:1.8rem 0 0;
@@ -644,6 +688,7 @@ body.undone .cue,body.undone .charm-hint{opacity:0!important}
   <div class="fin-rays" aria-hidden="true"></div>
   <div class="fin-orbit" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
+  <div class="medal-wrap">
   <svg class="medal" viewBox="0 0 200 240" role="img" aria-label="The Mythbolt shield">
     <defs>
       <linearGradient id="mbGold" x1="0" y1="0" x2=".55" y2="1">
@@ -688,6 +733,17 @@ body.undone .cue,body.undone .charm-hint{opacity:0!important}
       </g>
     </g>
   </svg>
+
+  <!-- the six powers, embedded one by one -->
+  <div class="runes" aria-hidden="true">
+    <i style="--rc:#9FC4E8;--ra:-90deg"></i>
+    <i style="--rc:#E8EAD8;--ra:-30deg"></i>
+    <i style="--rc:#CFE6F5;--ra:30deg"></i>
+    <i style="--rc:#FFD98E;--ra:90deg"></i>
+    <i style="--rc:#D69A5A;--ra:150deg"></i>
+    <i style="--rc:#FFF4D6;--ra:210deg"></i>
+  </div>
+  </div>
 
   <p class="fin-word">Mythbolt</p>
   <button type="button" class="restore" id="restoreBtn">Rebuild the world</button>
@@ -1163,44 +1219,211 @@ function cast(kind){
 }
 window.__mbCast=cast;
 
-/* the world coming apart: everything spirals into one point */
-var undone=0, undoneT0=0, vortex=[];
+/* ═══════════════════════════════════════════════════════════
+   THE UNDOING — five acts
+   0.00-0.90  CRACK      the sky splits, the world lurches
+   0.90-2.60  SHATTER    debris blows outward, the world dims
+   2.60-4.80  GATHERING  it all reverses; six powers stream in
+   4.80-5.40  IMPLOSION  collapse, whiteout, shockwave
+   5.40+      FORGED     the core holds while the shield takes it
+   ═══════════════════════════════════════════════════════════ */
+var ACT={crack:900,shatter:2600,gather:4800,implode:5400};
+var undone=0, undoneT0=0, debris=[], streams=[], rings=[], shake=0, uFlash=0;
+
+/* the six powers, in the charms' own colours */
+var POWERS=[
+  {c:[159,196,232],a:-1.55},  // storm
+  {c:[232,234,216],a:-0.52},  // gust
+  {c:[207,230,245],a: 0.52},  // frost
+  {c:[255,217,142],a: 1.57},  // sun
+  {c:[214,154, 90],a: 2.62},  // leaf
+  {c:[255,244,214],a:-2.62}   // star
+];
+
 window.__mbUndo=function(on){
   undone=on?1:0; undoneT0=performance.now();
-  if(on){
-    vortex=[];
-    for(var i=0;i<150;i++){
-      vortex.push({a:Math.random()*6.2832,
-                   r:rnd(.18,.95),
-                   sp:rnd(.4,1.5),
-                   sz:rnd(.9,3.1),
-                   ph:Math.random()*6.28});
+  debris=[];streams=[];rings=[];shake=0;uFlash=0;
+  if(!on) return;
+
+  // the world blown to pieces: tree wedges, island rock, torn cloud
+  for(var i=0;i<190;i++){
+    var kind=i%7===0?'rock':(i%3===0?'puff':'wedge');
+    debris.push({
+      x:Math.random(),y:Math.random(),
+      vx:rnd(-1,1),vy:rnd(-1,.55),
+      sp:rnd(.55,2.1),
+      sz:kind==='puff'?rnd(9,34):rnd(4,17),
+      rot:Math.random()*6.28, rs:rnd(-.14,.14),
+      kind:kind,
+      tone:kind==='puff'?rnd(.75,1):(kind==='rock'?rnd(.28,.46):rnd(.34,.62))
+    });
+  }
+  // six streams of power converging from the compass
+  POWERS.forEach(function(p,pi){
+    for(var j=0;j<34;j++){
+      streams.push({p:pi,c:p.c,
+        a:p.a+rnd(-.30,.30),
+        r:rnd(.95,2.0),
+        sp:rnd(.55,1.35),
+        sz:rnd(1.1,3.6),
+        ph:Math.random()*6.28,
+        lag:rnd(0,.42)});
     }
-  }else vortex=[];
+  });
 };
-function drawVortex(){
-  var el=(performance.now()-undoneT0)/1000;
-  var pull=Math.min(1,el/2.6);
+
+function drawUndo(){
+  var ms=performance.now()-undoneT0;
   var cx=W/2, cy=H/2, R=Math.min(W,H);
   ctx.save();
-  vortex.forEach(function(v){
-    if(!reduce){ v.a+=0.004*v.sp; v.r-=0.0016*v.sp*(0.4+pull); if(v.r<0.02){v.r=rnd(.7,1.05)} }
-    var rr=v.r*R*.62;
-    var x=cx+Math.cos(v.a)*rr, y=cy+Math.sin(v.a)*rr*.78;
-    var al=Math.min(1,(1-v.r)*1.5)*(0.35+pull*0.65);
-    ctx.globalAlpha=Math.max(0,al);
-    ctx.fillStyle='#FFD98E';
-    ctx.beginPath(); ctx.arc(x,y,v.sz,0,6.2832); ctx.fill();
-    ctx.globalAlpha=Math.max(0,al*.22);
-    ctx.beginPath(); ctx.arc(x,y,v.sz*4.5,0,6.2832); ctx.fill();
+
+  /* ── ACT I: the crack ─────────────────────────────── */
+  if(ms<ACT.crack){
+    var cp=ms/ACT.crack;
+    if(!reduce){
+      // three hard jolts
+      [0.06,0.34,0.66].forEach(function(t){
+        if(Math.abs(cp-t)<.05){ shake=Math.max(shake,1); uFlash=Math.max(uFlash,.9); }
+      });
+      // a fissure of light tearing down the sky
+      if(cp>.05){
+        var seg=8, prev=[cx+rnd(-4,4),0];
+        ctx.strokeStyle='rgba(255,248,220,'+(.85*(1-cp))+')';
+        ctx.lineWidth=3.5; ctx.beginPath(); ctx.moveTo(prev[0],0);
+        for(var s2=1;s2<=seg;s2++){
+          var yy=H*(s2/seg), xx=cx+Math.sin(s2*2.3+undoneT0)*W*.09*(s2/seg);
+          ctx.lineTo(xx,yy);
+        }
+        ctx.stroke();
+        ctx.strokeStyle='rgba(232,179,97,'+(.35*(1-cp))+')';
+        ctx.lineWidth=14; ctx.stroke();
+      }
+    }
+  }
+
+  /* ── ACT II + III: debris out, then hauled back in ── */
+  if(ms>ACT.crack && ms<ACT.implode){
+    var gathering = ms>ACT.shatter;
+    var gp = gathering ? (ms-ACT.shatter)/(ACT.gather-ACT.shatter) : 0;
+    debris.forEach(function(d){
+      var x=d.x*W, y=d.y*H;
+      if(!reduce){
+        if(!gathering){
+          d.x+=d.vx*.0042*d.sp; d.y+=d.vy*.0042*d.sp;
+          d.vy+=.010;                       // a little gravity while it flies
+        }else{
+          // reverse: everything is pulled to the core, accelerating
+          var dx=(.5-d.x), dy=(.5-d.y);
+          var k=.010+gp*gp*.075;
+          d.x+=dx*k; d.y+=dy*k;
+          d.rot+=d.rs*(1+gp*4);
+        }
+        d.rot+=d.rs;
+      }
+      var dist=Math.hypot(d.x-.5,d.y-.5);
+      var al=gathering?Math.min(1,dist*3.4):1;
+      if(al<=.01) return;
+      ctx.save(); ctx.globalAlpha=al*.9;
+      ctx.translate(d.x*W,d.y*H); ctx.rotate(d.rot);
+      var t=d.tone;
+      if(d.kind==='puff'){
+        ctx.fillStyle='rgba('+(226*t|0)+','+(238*t|0)+','+(246*t|0)+',.62)';
+        ctx.beginPath(); ctx.arc(0,0,d.sz,0,6.2832); ctx.fill();
+      }else if(d.kind==='rock'){
+        ctx.fillStyle='rgba('+(128*t*2|0)+','+(108*t*2|0)+','+(80*t*2|0)+',.95)';
+        ctx.beginPath(); ctx.moveTo(-d.sz,d.sz*.6); ctx.lineTo(d.sz*.4,d.sz);
+        ctx.lineTo(d.sz,-d.sz*.3); ctx.lineTo(-d.sz*.3,-d.sz); ctx.closePath(); ctx.fill();
+      }else{
+        ctx.fillStyle='rgba('+(52*t*2|0)+','+(104*t*2|0)+','+(70*t*2|0)+',.95)';
+        ctx.beginPath(); ctx.moveTo(0,-d.sz*1.5); ctx.lineTo(d.sz,d.sz*.8);
+        ctx.lineTo(-d.sz,d.sz*.8); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    });
+  }
+
+  /* ── ACT III: the six powers pour in ──────────────── */
+  if(ms>ACT.shatter && ms<ACT.implode+400){
+    var sp2=(ms-ACT.shatter)/(ACT.gather-ACT.shatter);
+    streams.forEach(function(st){
+      var prog=Math.max(0,Math.min(1,(sp2-st.lag)/(1-st.lag)));
+      if(prog<=0) return;
+      if(!reduce) st.r=Math.max(.015, st.r-(.0035+prog*prog*.030)*st.sp);
+      var spin=st.a + prog*2.3*st.sp;           // spiral as it closes
+      var rr=st.r*R*.72;
+      var x=cx+Math.cos(spin)*rr, y=cy+Math.sin(spin)*rr*.82;
+      var al=Math.min(1,st.r*2.6)*(.35+prog*.65);
+      var c=st.c;
+      ctx.globalAlpha=al;
+      ctx.fillStyle='rgb('+c[0]+','+c[1]+','+c[2]+')';
+      ctx.beginPath(); ctx.arc(x,y,st.sz,0,6.2832); ctx.fill();
+      // comet tail pointing back the way it came
+      ctx.globalAlpha=al*.42;
+      ctx.strokeStyle='rgb('+c[0]+','+c[1]+','+c[2]+')';
+      ctx.lineWidth=st.sz*1.05; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(x,y);
+      ctx.lineTo(cx+Math.cos(spin-.10)*rr*1.16, cy+Math.sin(spin-.10)*rr*1.16*.82);
+      ctx.stroke();
+    });
+
+    // the core swelling on what it has swallowed
+    var chg=Math.min(1,sp2);
+    var core=ctx.createRadialGradient(cx,cy,0,cx,cy,R*(.05+.26*chg));
+    core.addColorStop(0,'rgba(255,250,228,'+(.95*chg)+')');
+    core.addColorStop(.3,'rgba(255,214,138,'+(.55*chg)+')');
+    core.addColorStop(1,'rgba(232,179,97,0)');
+    ctx.globalAlpha=1; ctx.fillStyle=core; ctx.fillRect(0,0,W,H);
+  }
+
+  /* ── ACT IV: implosion ────────────────────────────── */
+  if(ms>ACT.gather && ms<ACT.implode+900){
+    var ip=(ms-ACT.gather)/(ACT.implode-ACT.gather);
+    if(ip>=1 && rings.length===0 && !reduce){
+      rings.push({r:0,a:1},{r:-40,a:.8},{r:-90,a:.55});
+      uFlash=1; shake=1;
+    }
+    if(ip<1){
+      // everything crushes to a point of light
+      var sq=Math.pow(Math.max(0,1-ip),2);
+      var g2=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.34*sq+3);
+      g2.addColorStop(0,'rgba(255,255,246,1)');
+      g2.addColorStop(.5,'rgba(255,226,160,'+(.8)+')');
+      g2.addColorStop(1,'rgba(232,179,97,0)');
+      ctx.globalAlpha=1; ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
+    }
+  }
+
+  // shockwave rings
+  rings.forEach(function(rg){
+    if(!reduce) rg.r+=R*.028;
+    rg.a*=.972;
+    if(rg.r<=0||rg.a<.01) return;
+    ctx.globalAlpha=rg.a*.8;
+    ctx.strokeStyle='rgba(255,238,196,1)'; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.arc(cx,cy,rg.r,0,6.2832); ctx.stroke();
+    ctx.globalAlpha=rg.a*.22; ctx.lineWidth=20;
+    ctx.stroke();
   });
-  // the core forming
-  ctx.globalAlpha=pull*.9;
-  var core=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.30*pull+2);
-  core.addColorStop(0,'rgba(255,246,214,'+(.85*pull)+')');
-  core.addColorStop(.35,'rgba(232,179,97,'+(.35*pull)+')');
-  core.addColorStop(1,'rgba(232,179,97,0)');
-  ctx.fillStyle=core; ctx.fillRect(0,0,W,H);
+
+  /* ── ACT V: the core holds, feeding the shield ────── */
+  if(ms>ACT.implode){
+    var hold=Math.min(1,(ms-ACT.implode)/700);
+    var pulse=reduce?1:(.9+Math.sin(ms*.004)*.1);
+    var g3=ctx.createRadialGradient(cx,cy,0,cx,cy,R*.44*pulse);
+    g3.addColorStop(0,'rgba(255,238,192,'+(.34*hold)+')');
+    g3.addColorStop(.45,'rgba(232,179,97,'+(.14*hold)+')');
+    g3.addColorStop(1,'rgba(232,179,97,0)');
+    ctx.globalAlpha=1; ctx.fillStyle=g3; ctx.fillRect(0,0,W,H);
+  }
+
+  // whiteout flashes
+  if(uFlash>.01){
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(255,250,235,'+(uFlash*.82)+')';
+    ctx.fillRect(0,0,W,H);
+    uFlash*=reduce?0:.84;
+  }
+  shake*=.88;
   ctx.restore();
 }
 window.__mbFxDur=function(k){return (FX[k]||{}).dur||6000};
@@ -1349,19 +1572,35 @@ function frame(ts){
     pal=[[0,1,2].map(function(k2){return lerp(pal[0][k2],d.tint[0][k2],a)}),
          [0,1,2].map(function(k2){return lerp(pal[1][k2],d.tint[1][k2],a)})];
   }
-  // the undoing drains the world toward black
+  // the undoing drains the world toward black — but only once it shatters,
+  // so the crack still reads against a lit sky
   var uA=0;
   if(undone){
-    uA=Math.min(1,(performance.now()-undoneT0)/2200);
-    pal=[[0,1,2].map(function(k2){return lerp(pal[0][k2],[10,8,5][k2],uA*.94)}),
-         [0,1,2].map(function(k2){return lerp(pal[1][k2],[4,4,3][k2],uA*.94)})];
+    var ums=performance.now()-undoneT0;
+    uA=Math.max(0,Math.min(1,(ums-ACT.crack)/1500));
+    pal=[[0,1,2].map(function(k2){return lerp(pal[0][k2],[10,8,5][k2],uA*.96)}),
+         [0,1,2].map(function(k2){return lerp(pal[1][k2],[4,4,3][k2],uA*.96)})];
   }
+  // the world lurches when it cracks
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(undone && shake>.01 && !reduce){
+    ctx.translate((Math.random()-.5)*30*shake,(Math.random()-.5)*30*shake);
+  }
+
   var g=ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,rgb(pal[0])); g.addColorStop(1,rgb(pal[1]));
-  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=g; ctx.fillRect(-40,-40,W+80,H+80);
+
+  // once it shatters, the world itself dissolves — the debris IS the world,
+  // so nothing may remain standing behind it
+  var worldA=1;
+  if(undone){
+    var wms=performance.now()-undoneT0;
+    worldA=Math.max(0,1-Math.max(0,(wms-ACT.crack*.8))/900);
+  }
 
   // sun / moon, only up high
-  var lum=band(P,0,.30,.18);
+  var lum=band(P,0,.30,.18)*worldA;
   if(lum>.004){
     var lx=W*.20, ly=H*.24;
     ctx.save(); ctx.globalAlpha=lum;
@@ -1376,7 +1615,7 @@ function frame(ts){
   }
 
   // gliders, high only
-  var ga=band(P,0,.26,.14);
+  var ga=band(P,0,.26,.14)*worldA;
   if(ga>.004) gliders.forEach(function(gl){
     if(!reduce){ gl.x+=gl.v/W*2.4; if(gl.x>1.15) gl.x=-.15; }
     drawGlider(gl,ga);
@@ -1385,22 +1624,22 @@ function frame(ts){
   // clouds — each lives at its own depth
   clouds.forEach(function(c){
     // hard ceiling: nothing cloudlike survives past the canopy line
-    var a=band(P,Math.max(0,c.depth-.18),Math.min(c.depth+.06,.38),.10);
+    var a=band(P,Math.max(0,c.depth-.18),Math.min(c.depth+.06,.38),.10)*worldA;
     if(a<=.004) return;
     if(!reduce){ c.x+=c.v/W*2.2; if(c.x>1.45) c.x=-.45; }
     drawCloud(c,a);
   });
 
   // the guardian
-  drawGuardian(band(P,.14,.40,.13));
+  drawGuardian(band(P,.14,.40,.13)*worldA);
 
   // canopy: far layer then near layer
-  drawTrees(band(P,.66,1.04,.14),0, night?'rgba(16,32,25,.9)':'rgba(74,104,72,.88)');
-  drawTrees(band(P,.78,1.08,.12),1, night?'rgba(7,17,13,.96)':'rgba(32,56,40,.95)');
+  drawTrees(band(P,.66,1.04,.14)*worldA,0, night?'rgba(16,32,25,.9)':'rgba(74,104,72,.88)');
+  drawTrees(band(P,.78,1.08,.12)*worldA,1, night?'rgba(7,17,13,.96)':'rgba(32,56,40,.95)');
 
   // spirits in the lower world
   spirits.forEach(function(s){
-    var a=band(P,s.depth-.14,1.06,.15)*.8;
+    var a=band(P,s.depth-.14,1.06,.15)*.8*worldA;
     if(a<=.004) return;
     if(pointer.has && !reduce){
       var sx=(s.bx*1.1-.05)*W, sy=s.by*H;
@@ -1414,13 +1653,13 @@ function frame(ts){
   });
 
   // motes / fireflies, strongest at the floor
-  var ma=band(P,.50,1.08,.2);
+  var ma=band(P,.50,1.08,.2)*worldA;
   if(ma>.004) motes.forEach(function(m){ drawMote(m,ma*.85) });
 
   // weather sits over the world
   if(fxE>0) drawFx(fxE);
   // and the undoing sits over everything
-  if(undone) drawVortex();
+  if(undone) drawUndo();
 
   requestAnimationFrame(frame);
 }
@@ -1471,46 +1710,95 @@ var SHARDS='.wordmark,.jp,.say,.tag,.craft span,.lantern,.note,.ask,.ask-note,'+
            '.reading,.ways .way,.brand,.nav-right a,.tbtn,.crazy-btn,.prop,.foot p,'+
            '.constel,.augury-txt';
 var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-var shards=[], live=false, scrollWas=0;
+var shards=[], split=[], live=false, scrollWas=0, timer=null;
+var scenes=document.querySelector('.scenes');
+
+/* short headline text breaks per CHARACTER — far more violent than
+   moving whole blocks. Static markup only; nothing user-supplied. */
+var SPLITTABLE='.wordmark,.say,.tag,.craft span,.note,.brand,.augury-txt';
+function splitChars(el){
+  if(el.closest('.reading')||el.closest('.finale')) return false;
+  if((el.textContent||'').length>72) return false;
+  split.push({el:el,html:el.innerHTML});
+  var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), nodes=[];
+  while(w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(function(n){
+    var frag=document.createDocumentFragment();
+    [].forEach.call(n.nodeValue,function(chr){
+      var s=document.createElement('span');
+      s.className='ch';
+      s.textContent = chr===' ' ? ' ' : chr;
+      frag.appendChild(s);
+    });
+    n.parentNode.replaceChild(frag,n);
+  });
+  return true;
+}
+
+function throwIt(el,cx,cy,spread,delayMax){
+  var r=el.getBoundingClientRect();
+  if(!r.width && !r.height) return;
+  var ex=(r.left+r.width/2)-cx, ey=(r.top+r.height/2)-cy;
+  var d=Math.hypot(ex,ey)||1;
+  var reach=spread+Math.random()*spread*.9;
+  el.style.setProperty('--tx',(ex/d*reach).toFixed(0)+'px');
+  el.style.setProperty('--ty',(ey/d*reach*.72-70).toFixed(0)+'px');
+  // where the core is, relative to this piece — this is the return trip
+  el.style.setProperty('--cx',(-ex).toFixed(0)+'px');
+  el.style.setProperty('--cy',(-ey).toFixed(0)+'px');
+  el.style.setProperty('--rot',((Math.random()-.5)*220).toFixed(0)+'deg');
+  el.style.setProperty('--dly',(Math.random()*delayMax).toFixed(2)+'s');
+}
 
 function undo(){
   if(live) return; live=true;
   scrollWas=window.scrollY;
   btn.setAttribute('aria-expanded','true');
 
-  shards=[].slice.call(document.querySelectorAll(SHARDS));
-  var cx=innerWidth/2, cy=innerHeight/2;
-  shards.forEach(function(el){
-    var r=el.getBoundingClientRect();
-    var ex=(r.left+r.width/2)-cx, ey=(r.top+r.height/2)-cy;
-    var d=Math.hypot(ex,ey)||1;
-    // fling outward along its own bearing, then it shrinks away
-    var reach=520+Math.random()*460;
-    el.style.setProperty('--tx',(ex/d*reach).toFixed(0)+'px');
-    el.style.setProperty('--ty',(ey/d*reach*.75-90).toFixed(0)+'px');
-    el.style.setProperty('--rot',((Math.random()-.5)*150).toFixed(0)+'deg');
-    el.style.setProperty('--dly',(Math.random()*.75).toFixed(2)+'s');
-    el.classList.add('shard');
-  });
-
+  // ACT I — the lurch
+  if(scenes && !reduce){
+    scenes.classList.add('quake');
+    setTimeout(function(){scenes.classList.remove('quake')},950);
+  }
   document.body.classList.add('undone');
+  document.documentElement.classList.add('undone');
   if(window.__mbUndo) window.__mbUndo(true);
 
+  // ACT II — break it, one character at a time where it counts
+  timer=setTimeout(function(){
+    var cx=innerWidth/2, cy=innerHeight/2;
+    [].forEach.call(document.querySelectorAll(SPLITTABLE),splitChars);
+
+    shards=[].slice.call(document.querySelectorAll(SHARDS)).filter(function(el){
+      return !el.querySelector('.ch');   // split parents stay put; their chars fly
+    });
+    shards.forEach(function(el){ throwIt(el,cx,cy,470,.42); el.classList.add('shard') });
+    [].forEach.call(document.querySelectorAll('.ch'),function(el){
+      throwIt(el,cx,cy,560,.55);
+    });
+  }, reduce?0:420);
+
+  // ACT V — the shield takes what is left
   setTimeout(function(){
     fin.hidden=false;
     restore.focus({preventScroll:true});
-  }, reduce?260:2350);
+  }, reduce?300:5400);
 }
 
 function rebuild(){
   if(!live) return;
+  clearTimeout(timer);
   fin.hidden=true;
   shards.forEach(function(el){
     el.classList.remove('shard');
-    ['--tx','--ty','--rot','--dly'].forEach(function(p){el.style.removeProperty(p)});
+    ['--tx','--ty','--cx','--cy','--rot','--dly'].forEach(function(p){el.style.removeProperty(p)});
   });
-  shards=[];
+  // put the split words back exactly as they were
+  split.forEach(function(s){ s.el.innerHTML=s.html });
+  shards=[]; split=[];
+  if(scenes) scenes.classList.remove('quake');
   document.body.classList.remove('undone');
+  document.documentElement.classList.remove('undone');
   if(window.__mbUndo) window.__mbUndo(false);
   btn.setAttribute('aria-expanded','false');
   window.scrollTo(0,scrollWas);
